@@ -1,0 +1,25 @@
+{
+  "name": "fullstack-init",
+  "description": "全栈项目初始化工具，快速创建 Go + React 全栈项目，采用 DDD 分层架构，包含完整的开发配置",
+  "version": "1.0.0",
+  "author": {
+    "name": "maguowei",
+    "email": "your-email@example.com",
+    "url": "https://github.com/maguowei"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maguowei/claude-plugins"
+  },
+  "keywords": [
+    "project-template",
+    "go",
+    "react",
+    "ddd",
+    "fullstack",
+    "typescript",
+    "tailwindcss",
+    "shadcn-ui"
+  ],
+  "license": "MIT"
+}

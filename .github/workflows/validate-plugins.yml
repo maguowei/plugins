@@ -1,0 +1,201 @@
+name: Validate Plugins
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'plugins/**'
+      - 'tools/**'
+      - '.github/workflows/validate-plugins.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up permissions
+        run: chmod +x tools/*.sh
+
+      - name: Validate all plugins
+        run: |
+          echo "========================================"
+          echo "Validating all plugins in marketplace"
+          echo "========================================"
+          ./tools/validate-plugin.sh --all
+
+      - name: Test plugins
+        run: |
+          echo "========================================"
+          echo "Testing all plugins"
+          echo "========================================"
+
+          # Get list of all plugins
+          if [ -d "plugins" ]; then
+            for plugin_dir in plugins/*; do
+              if [ -d "$plugin_dir" ]; then
+                plugin_name=$(basename "$plugin_dir")
+                echo ""
+                echo "Testing plugin: $plugin_name"
+                ./tools/test-plugin.sh "$plugin_name" || exit 1
+              fi
+            done
+          fi
+
+      - name: Check plugin structure
+        run: |
+          echo "========================================"
+          echo "Checking plugin directory structure"
+          echo "========================================"
+
+          # Check if plugins directory exists
+          if [ ! -d "plugins" ]; then
+            echo "Error: plugins/ directory not found"
+            exit 1
+          fi
+
+          # Count plugins
+          plugin_count=$(find plugins -mindepth 1 -maxdepth 1 -type d | wc -l)
+          echo "Found $plugin_count plugin(s)"
+
+          if [ "$plugin_count" -eq 0 ]; then
+            echo "Warning: No plugins found"
+          fi
+
+      - name: Validate plugin manifests
+        run: |
+          echo "========================================"
+          echo "Validating plugin.json files"
+          echo "========================================"
+
+          errors=0
+
+          for plugin_dir in plugins/*; do
+            if [ -d "$plugin_dir" ]; then
+              plugin_name=$(basename "$plugin_dir")
+              manifest="$plugin_dir/.claude-plugin/plugin.json"
+
+              echo ""
+              echo "Checking: $plugin_name"
+
+              # Check if plugin.json exists
+              if [ ! -f "$manifest" ]; then
+                echo "  ✗ Missing plugin.json"
+                ((errors++))
+                continue
+              fi
+
+              # Check JSON syntax (basic check)
+              if ! python3 -c "import json; json.load(open('$manifest'))" 2>/dev/null; then
+                echo "  ✗ Invalid JSON format"
+                ((errors++))
+                continue
+              fi
+
+              # Check required fields
+              required_fields=("name" "description" "version")
+              for field in "${required_fields[@]}"; do
+                if ! grep -q "\"$field\"" "$manifest"; then
+                  echo "  ✗ Missing required field: $field"
+                  ((errors++))
+                fi
+              done
+
+              # Check if name matches directory
+              manifest_name=$(python3 -c "import json; print(json.load(open('$manifest'))['name'])" 2>/dev/null || echo "")
+              if [ "$manifest_name" != "$plugin_name" ]; then
+                echo "  ✗ Name mismatch: directory=$plugin_name, manifest=$manifest_name"
+                ((errors++))
+              else
+                echo "  ✓ Valid manifest"
+              fi
+            fi
+          done
+
+          if [ $errors -gt 0 ]; then
+            echo ""
+            echo "Validation failed with $errors error(s)"
+            exit 1
+          fi
+
+          echo ""
+          echo "All manifests are valid!"
+
+      - name: Check for README files
+        run: |
+          echo "========================================"
+          echo "Checking README.md files"
+          echo "========================================"
+
+          missing_readme=0
+
+          for plugin_dir in plugins/*; do
+            if [ -d "$plugin_dir" ]; then
+              plugin_name=$(basename "$plugin_dir")
+
+              if [ ! -f "$plugin_dir/README.md" ]; then
+                echo "  ✗ Missing README.md in $plugin_name"
+                ((missing_readme++))
+              else
+                # Check if README has content
+                lines=$(wc -l < "$plugin_dir/README.md")
+                if [ "$lines" -lt 5 ]; then
+                  echo "  ⚠ README.md in $plugin_name seems too short ($lines lines)"
+                else
+                  echo "  ✓ README.md in $plugin_name"
+                fi
+              fi
+            fi
+          done
+
+          if [ $missing_readme -gt 0 ]; then
+            echo ""
+            echo "Warning: $missing_readme plugin(s) missing README.md"
+            # Don't fail, just warn
+          fi
+
+      - name: Generate summary
+        if: always()
+        run: |
+          echo "========================================"
+          echo "Validation Summary"
+          echo "========================================"
+
+          if [ -d "plugins" ]; then
+            total_plugins=$(find plugins -mindepth 1 -maxdepth 1 -type d | wc -l)
+            echo "Total plugins: $total_plugins"
+
+            # Count extension types
+            commands_count=$(find plugins -path "*/commands/*.md" 2>/dev/null | wc -l)
+            agents_count=$(find plugins -path "*/agents/*.md" 2>/dev/null | wc -l)
+            skills_count=$(find plugins -path "*/skills/*/SKILL.md" 2>/dev/null | wc -l)
+
+            echo "Total Slash Commands: $commands_count"
+            echo "Total Agents: $agents_count"
+            echo "Total Skills: $skills_count"
+
+            echo ""
+            echo "Plugin list:"
+            for plugin_dir in plugins/*; do
+              if [ -d "$plugin_dir" ]; then
+                plugin_name=$(basename "$plugin_dir")
+                manifest="$plugin_dir/.claude-plugin/plugin.json"
+
+                if [ -f "$manifest" ]; then
+                  version=$(python3 -c "import json; print(json.load(open('$manifest')).get('version', 'unknown'))" 2>/dev/null || echo "unknown")
+                  description=$(python3 -c "import json; print(json.load(open('$manifest')).get('description', ''))" 2>/dev/null || echo "")
+
+                  echo "  - $plugin_name ($version): $description"
+                fi
+              fi
+            done
+          fi
+
+          echo ""
+          echo "========================================"
+          echo "✓ Validation complete!"
+          echo "========================================"

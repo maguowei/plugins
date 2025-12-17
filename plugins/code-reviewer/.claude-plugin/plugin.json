@@ -1,0 +1,24 @@
+{
+  "name": "code-reviewer",
+  "description": "专业代码审查工具，自动检查代码质量、安全性和性能问题，支持 Go、TypeScript、React 等技术栈",
+  "version": "1.0.0",
+  "author": {
+    "name": "maguowei",
+    "email": "your-email@example.com",
+    "url": "https://github.com/maguowei"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maguowei/claude-plugins"
+  },
+  "keywords": [
+    "code-review",
+    "quality",
+    "security",
+    "performance",
+    "go",
+    "typescript",
+    "react"
+  ],
+  "license": "MIT"
+}

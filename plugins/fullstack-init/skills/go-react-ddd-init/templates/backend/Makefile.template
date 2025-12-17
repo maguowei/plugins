@@ -1,0 +1,71 @@
+.PHONY: help run build test clean ent-init ent-gen migrate docker-build docker-run
+
+help: ## 显示帮助信息
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+run: ## 运行应用
+	@echo "Starting application..."
+	@go run cmd/api/main.go
+
+build: ## 编译应用
+	@echo "Building application..."
+	@go build -o bin/api cmd/api/main.go
+
+test: ## 运行测试
+	@echo "Running tests..."
+	@go test -v -cover ./...
+
+test-coverage: ## 生成测试覆盖率报告
+	@echo "Generating coverage report..."
+	@go test -coverprofile=coverage.out ./...
+	@go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report: coverage.html"
+
+clean: ## 清理编译产物
+	@echo "Cleaning..."
+	@rm -rf bin/
+	@rm -f coverage.out coverage.html
+
+ent-init: ## 初始化 Ent schema
+	@echo "Initializing Ent schema..."
+	@go run -mod=mod entgo.io/ent/cmd/ent new User
+
+ent-gen: ## 生成 Ent 代码
+	@echo "Generating Ent code..."
+	@go generate ./internal/infrastructure/persistence/ent
+
+migrate: ## 运行数据库迁移
+	@echo "Running migrations..."
+	@go run cmd/migrate/main.go
+
+docker-build: ## 构建 Docker 镜像
+	@echo "Building Docker image..."
+	@docker build -t {{PROJECT_NAME}}-backend:latest .
+
+docker-run: ## 运行 Docker 容器
+	@echo "Running Docker container..."
+	@docker run -p 8080:8080 --env-file .env {{PROJECT_NAME}}-backend:latest
+
+lint: ## 运行代码检查
+	@echo "Running linter..."
+	@golangci-lint run
+
+fmt: ## 格式化代码
+	@echo "Formatting code..."
+	@go fmt ./...
+
+tidy: ## 整理依赖
+	@echo "Tidying dependencies..."
+	@go mod tidy
+
+dev: ## 开发模式（热重载）
+	@echo "Starting development mode..."
+	@air
+
+install-tools: ## 安装开发工具
+	@echo "Installing development tools..."
+	@go install github.com/cosmtrek/air@latest
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	@go install entgo.io/ent/cmd/ent@latest
+
+.DEFAULT_GOAL := help
