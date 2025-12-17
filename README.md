@@ -86,6 +86,31 @@
 └── README.md
 ```
 
+## 项目结构
+
+```
+claude-plugins/
+├── .claude-plugin/
+│   └── marketplace.json      # 插件市场配置文件
+├── plugins/
+│   ├── smart-git-commit/     # 智能 Git 提交助手
+│   ├── code-reviewer/        # 代码审查工具
+│   └── fullstack-init/       # 全栈项目初始化工具
+├── docs/                     # 详细文档
+├── tools/                    # 开发工具脚本
+├── CONTRIBUTING.md           # 贡献指南
+└── README.md
+```
+
+### 市场配置文件
+
+`.claude-plugin/marketplace.json` 是插件市场的核心配置文件，定义了：
+- 市场名称和所有者信息
+- 市场元数据（描述、版本、仓库地址）
+- 可用插件列表及其配置
+
+这使得 Claude Code 能够识别和加载市场中的所有插件。
+
 ## 快速开始
 
 ### 1. 添加市场到 Claude Code

@@ -1,0 +1,81 @@
+{
+  "name": "claude-plugins",
+  "owner": {
+    "name": "maguowei",
+    "email": "your-email@example.com"
+  },
+  "metadata": {
+    "description": "专业级 Claude Code 插件集合，提升开发效率和代码质量",
+    "version": "1.0.0",
+    "homepage": "https://github.com/maguowei/claude-plugins",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/maguowei/claude-plugins"
+    },
+    "license": "MIT"
+  },
+  "plugins": [
+    {
+      "name": "smart-git-commit",
+      "source": "./plugins/smart-git-commit",
+      "description": "智能 Git 提交助手，自动分析代码变更并生成符合 Conventional Commits 规范的 commit message",
+      "version": "1.0.0",
+      "author": {
+        "name": "maguowei",
+        "email": "your-email@example.com",
+        "url": "https://github.com/maguowei"
+      },
+      "keywords": [
+        "git",
+        "commit",
+        "conventional-commits",
+        "automation",
+        "productivity"
+      ],
+      "category": "Git 工具"
+    },
+    {
+      "name": "code-reviewer",
+      "source": "./plugins/code-reviewer",
+      "description": "专业代码审查工具，自动检查代码质量、安全性和性能问题，支持 Go、TypeScript、React 等技术栈",
+      "version": "1.0.0",
+      "author": {
+        "name": "maguowei",
+        "email": "your-email@example.com",
+        "url": "https://github.com/maguowei"
+      },
+      "keywords": [
+        "code-review",
+        "quality",
+        "security",
+        "performance",
+        "go",
+        "typescript",
+        "react"
+      ],
+      "category": "代码质量"
+    },
+    {
+      "name": "fullstack-init",
+      "source": "./plugins/fullstack-init",
+      "description": "全栈项目初始化工具，快速创建 Go + React 全栈项目，采用 DDD 分层架构，包含完整的开发配置",
+      "version": "1.0.0",
+      "author": {
+        "name": "maguowei",
+        "email": "your-email@example.com",
+        "url": "https://github.com/maguowei"
+      },
+      "keywords": [
+        "project-template",
+        "go",
+        "react",
+        "ddd",
+        "fullstack",
+        "typescript",
+        "tailwindcss",
+        "shadcn-ui"
+      ],
+      "category": "项目模板"
+    }
+  ]
+}
