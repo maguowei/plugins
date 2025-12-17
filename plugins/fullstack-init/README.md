@@ -7,7 +7,7 @@
 - 🚀 **一键初始化** - 快速创建完整的全栈项目结构
 - 🏗️ **DDD 架构** - 领域驱动设计分层架构（Domain, Application, Infrastructure, Interfaces）
 - 📐 **标准布局** - 符合 Go 标准布局（golang-standards/project-layout）
-- 🎨 **现代前端** - React 18 + TypeScript + Tailwind CSS + shadcn/ui
+- 🎨 **现代前端** - React 19.1.4 + TypeScript + Tailwind CSS 4.1.18 + Vite 7.3.0 + shadcn/ui
 - 🐳 **容器化** - Docker 和 docker-compose 配置
 - 📝 **OpenAPI** - OpenAPI 3.0 规范
 - 🔌 **WebSocket** - 可选的 WebSocket 支持
@@ -50,9 +50,9 @@
 
 | 组件 | 技术 | 版本 |
 |------|------|------|
-| 语言 | Go | 1.21+ |
-| Web 框架 | Gin | Latest |
-| ORM | Ent | Latest |
+| 语言 | Go | 1.25 |
+| Web 框架 | Gin | 1.11.0 |
+| ORM | Ent | 0.14.0 |
 | API 规范 | OpenAPI | 3.0 |
 | 认证 | JWT | Latest |
 | 日志 | Zap | Latest |
@@ -61,10 +61,10 @@
 
 | 组件 | 技术 | 版本 |
 |------|------|------|
-| 框架 | React | 18+ |
+| 框架 | React | 19.1.4 |
 | 语言 | TypeScript | 5+ |
-| 构建工具 | Vite | 5+ |
-| 样式 | Tailwind CSS | 3+ |
+| 构建工具 | Vite | 7.3.0 |
+| 样式 | Tailwind CSS | 4.1.18 |
 | 组件库 | shadcn/ui | Latest |
 | 路由 | React Router | 6+ |
 | 状态管理 | Zustand | Latest |

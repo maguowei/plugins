@@ -17,19 +17,19 @@ model: claude-sonnet-4-5-20250929
 ## 项目特性
 
 **后端（Go）：**
-- Go 1.21+
-- Gin Web Framework
-- Ent ORM
+- Go 1.25
+- Gin v1.11.0
+- Ent v0.14.0
 - DDD 分层架构（Domain, Application, Infrastructure, Interfaces）
 - 符合 Go 标准布局（golang-standards/project-layout）
 - OpenAPI 3.0 规范
 - WebSocket 支持（可选）
 
 **前端（React）：**
-- React 18+
+- React 19.1.4
 - TypeScript
-- Vite
-- Tailwind CSS
+- Vite 7.3.0
+- Tailwind CSS 4.1.18
 - shadcn/ui 组件库
 - React Router
 - 状态管理（Zustand）

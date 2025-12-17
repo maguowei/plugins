@@ -11,18 +11,18 @@ allowed-tools: Write, Bash, Read, AskUserQuestion
 ## 项目技术栈
 
 ### 后端（Go）
-- **语言：** Go 1.21+
-- **Web 框架：** Gin
-- **ORM：** Ent
+- **语言：** Go 1.25
+- **Web 框架：** Gin v1.11.0
+- **ORM：** Ent v0.14.0
 - **架构：** DDD 分层（Domain, Application, Infrastructure, Interfaces）
 - **API 规范：** OpenAPI 3.0
 - **通信：** RESTful API + WebSocket（可选）
 
 ### 前端（React）
-- **框架：** React 18+
+- **框架：** React 19.1.4
 - **语言：** TypeScript
-- **构建工具：** Vite
-- **样式：** Tailwind CSS
+- **构建工具：** Vite 7.3.0
+- **样式：** Tailwind CSS 4.1.18
 - **组件库：** shadcn/ui
 - **路由：** React Router v6
 - **状态管理：** Zustand
@@ -259,8 +259,8 @@ git commit -m "chore: 初始化项目
 项目路径：/path/to/my-awesome-app
 
 技术栈：
-  后端：Go 1.21 + Gin + Ent + DDD
-  前端：React 18 + TypeScript + Tailwind CSS + shadcn/ui
+  后端：Go 1.25 + Gin v1.11.0 + Ent v0.14.0 + DDD
+  前端：React 19.1.4 + TypeScript + Tailwind CSS 4.1.18 + Vite 7.3.0 + shadcn/ui
   数据库：PostgreSQL
   其他：Docker, WebSocket
 
@@ -306,8 +306,6 @@ git commit -m "chore: 初始化项目
 - `{{ENABLE_WEBSOCKET}}` - 是否启用 WebSocket
 - `{{ENABLE_AUTH}}` - 是否启用认证
 - `{{STATE_MANAGER}}` - 状态管理库
-- `{{GO_VERSION}}` - Go 版本
-- `{{REACT_VERSION}}` - React 版本
 - `{{CURRENT_YEAR}}` - 当前年份
 
 ## 文件生成顺序
