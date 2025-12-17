@@ -7,11 +7,8 @@
   "metadata": {
     "description": "专业级 Claude Code 插件集合，提升开发效率和代码质量",
     "version": "1.0.0",
-    "homepage": "https://github.com/maguowei/claude-plugins",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/maguowei/claude-plugins"
-    },
+    "homepage": "https://github.com/maguowei/claude",
+    "repository": "https://github.com/maguowei/claude",
     "license": "MIT"
   },
   "plugins": [
