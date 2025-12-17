@@ -8,7 +8,7 @@ model: claude-sonnet-4-5-20250929
 
 # 智能 Git 提交
 
-请调用 `commit-assistant` Agent 来处理这次提交。
+请调用 `smart-git-commit:commit-assistant` Agent 来处理这次提交。
 
 Agent 会：
 1. 分析 git status 和 git diff

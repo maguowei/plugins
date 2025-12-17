@@ -369,9 +369,9 @@ Git 操作失败：not a git repository
 **Slash Command (`/commit`)**
 - 提供用户触发点
 - 接收参数（如 `--amend`）
-- 调用 commit-assistant Agent
+- 调用 smart-git-commit:commit-assistant Agent
 
-**Agent (commit-assistant)**
+**Agent (smart-git-commit:commit-assistant)**
 - 执行 git 命令分析仓库
 - 使用 AI 理解代码变更
 - 生成规范的 commit message
