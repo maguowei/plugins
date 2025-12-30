@@ -20,13 +20,13 @@ project-root/
 │   └── migrate/         # 数据库迁移工具
 │       └── main.go
 ├── internal/            # 私有应用代码
-│   └── app/
-│       ├── domain/
-│       ├── application/
-│       ├── infrastructure/
-│       └── interface/
-├── pkg/                 # 可被外部使用的库代码
-│   └── ent/            # Ent Schema
+│   ├── app/
+│   │   ├── domain/
+│   │   ├── application/
+│   │   ├── infrastructure/
+│   │   └── interface/
+│   └── ent/            # Ent Schema（私有）
+│       └── schema/
 ├── api/                 # API 定义
 │   └── openapi.yaml    # OpenAPI 规范
 ├── configs/             # 配置文件
@@ -97,28 +97,30 @@ func main() {
 
 ```
 internal/
-└── app/
-    ├── domain/          # 领域层
-    │   └── user/
-    │       ├── entity/
-    │       ├── valueobject/
-    │       ├── event/
-    │       ├── repository/
-    │       └── service/
-    ├── application/     # 应用层
-    │   ├── service/
-    │   └── dto/
-    ├── infrastructure/  # 基础设施层
-    │   ├── repository/
-    │   ├── config/
-    │   ├── external/
-    │   └── observability/
-    └── interface/       # 接口层
-        └── http/
-            ├── handler/
-            ├── dto/
-            ├── middleware/
-            └── router.go
+├── app/
+│   ├── domain/          # 领域层
+│   │   └── user/
+│   │       ├── entity/
+│   │       ├── valueobject/
+│   │       ├── event/
+│   │       ├── repository/
+│   │       └── service/
+│   ├── application/     # 应用层
+│   │   ├── service/
+│   │   └── dto/
+│   ├── infrastructure/  # 基础设施层
+│   │   ├── repository/
+│   │   ├── config/
+│   │   ├── external/
+│   │   └── observability/
+│   └── interface/       # 接口层
+│       └── http/
+│           ├── handler/
+│           ├── dto/
+│           ├── middleware/
+│           └── router.go
+└── ent/                 # Ent Schema（私有）
+    └── schema/
 ```
 
 ### /pkg
@@ -134,14 +136,13 @@ internal/
 
 ```
 pkg/
-├── ent/              # Ent Schema (可被 cmd/ 使用)
-│   └── schema/
-│       └── user.go
 ├── constants/        # 常量
 │   └── status.go
 └── errors/           # 错误定义
     └── errors.go
 ```
+
+**注意**: Ent schema 不应放在 pkg/ 下，应放在 internal/ent/schema/
 
 ### /api
 
@@ -303,39 +304,38 @@ my-service/
 │   └── migrate/
 │       └── main.go
 ├── internal/
-│   └── app/
-│       ├── domain/
-│       │   └── user/
-│       │       ├── entity/
-│       │       │   ├── user.go
-│       │       │   └── user_test.go
-│       │       ├── valueobject/
-│       │       │   ├── email.go
-│       │       │   └── email_test.go
-│       │       ├── repository/
-│       │       │   └── user_repository.go
-│       │       └── service/
-│       │           └── user_service.go
-│       ├── application/
-│       │   └── service/
-│       │       ├── user_application_service.go
-│       │       └── user_application_service_test.go
-│       ├── infrastructure/
-│       │   ├── repository/
-│       │   │   └── user_repository_impl.go
-│       │   ├── config/
-│       │   │   └── config.go
-│       │   └── observability/
-│       │       ├── logger.go
-│       │       └── metrics.go
-│       └── interface/
-│           └── http/
-│               ├── handler/
-│               │   └── user_handler.go
-│               ├── middleware/
-│               │   └── auth.go
-│               └── router.go
-├── pkg/
+│   ├── app/
+│   │   ├── domain/
+│   │   │   └── user/
+│   │   │       ├── entity/
+│   │   │       │   ├── user.go
+│   │   │       │   └── user_test.go
+│   │   │       ├── valueobject/
+│   │   │       │   ├── email.go
+│   │   │       │   └── email_test.go
+│   │   │       ├── repository/
+│   │   │       │   └── user_repository.go
+│   │   │       └── service/
+│   │   │           └── user_service.go
+│   │   ├── application/
+│   │   │   └── service/
+│   │   │       ├── user_application_service.go
+│   │   │       └── user_application_service_test.go
+│   │   ├── infrastructure/
+│   │   │   ├── repository/
+│   │   │   │   └── user_repository_impl.go
+│   │   │   ├── config/
+│   │   │   │   └── config.go
+│   │   │   └── observability/
+│   │   │       ├── logger.go
+│   │   │       └── metrics.go
+│   │   └── interface/
+│   │       └── http/
+│   │           ├── handler/
+│   │           │   └── user_handler.go
+│   │           ├── middleware/
+│   │           │   └── auth.go
+│   │           └── router.go
 │   └── ent/
 │       └── schema/
 │           └── user.go

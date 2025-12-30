@@ -76,7 +76,7 @@ tools: ["Read", "Write", "Bash", "Glob", "TodoWrite"]
 - ❌ `internal/interface/` — 必须是 `internal/app/interface/`
 
 **特殊路径（正确）**：
-- ✅ `pkg/ent/schema/` — Ent schema 属于可重用的公共代码，放在 pkg 下
+- ✅ `internal/ent/schema/` — Ent schema 是私有的数据模型，放在 internal 下
 - ✅ `cmd/server/` 和 `cmd/migrate/` — 应用程序入口，放在 cmd 下
 - ✅ `configs/`, `docs/`, `api/` — 项目级配置和文档，放在根目录
 
@@ -113,7 +113,7 @@ tools: ["Read", "Write", "Bash", "Glob", "TodoWrite"]
 
 2. **创建基础目录结构**
    ```bash
-   mkdir -p <project_name>/{cmd/{server,migrate},internal/app/{domain,application,infrastructure,interface},pkg/ent/schema,api,configs,test/integration,docs,scripts,deployments/{docker,k8s}}
+   mkdir -p <project_name>/{cmd/{server,migrate},internal/{app/{domain,application,infrastructure,interface},ent/schema},api,configs,test/integration,docs,scripts,deployments/{docker,k8s}}
    ```
 
 3. **初始化 Go 模块**
@@ -201,7 +201,7 @@ tools: ["Read", "Write", "Bash", "Glob", "TodoWrite"]
 ### 阶段 4: 基础设施层实现（8 个任务）
 
 1. **创建 Ent Schema**
-   - `pkg/ent/schema/user.go`
+   - `internal/ent/schema/user.go`
    - 字段：UUID ID、Email（唯一）、Name、时间戳
    - 如需要添加索引
    - 适配数据库类型（MySQL vs SQLite）
@@ -378,7 +378,7 @@ tools: ["Read", "Write", "Bash", "Glob", "TodoWrite"]
 
 4. **生成 Ent 代码**
    ```bash
-   go run -mod=mod entgo.io/ent/cmd/ent generate ./pkg/ent/schema
+   go run -mod=mod entgo.io/ent/cmd/ent generate ./internal/ent/schema
    ```
 
 5. **运行 go mod tidy**
@@ -401,7 +401,7 @@ tools: ["Read", "Write", "Bash", "Glob", "TodoWrite"]
    ! test -d <project_name>/internal/application && echo "✓ No forbidden internal/application/"
 
    # 检查特殊路径
-   test -d <project_name>/pkg/ent/schema && echo "✓ Ent schema in pkg/"
+   test -d <project_name>/internal/ent/schema && echo "✓ Ent schema in internal/"
    test -d <project_name>/cmd/server && echo "✓ Server cmd exists"
    ```
 
@@ -513,12 +513,13 @@ Module: <go_module>
 ├── cmd/
 │   ├── server/main.go
 │   └── migrate/main.go
-├── internal/app/
-│   ├── domain/user/{entity,valueobject,event,repository,service}/
-│   ├── application/{service,dto}/
-│   ├── infrastructure/{repository,config,observability,event}/
-│   └── interface/http/{handler,dto,middleware,router.go}
-├── pkg/ent/schema/user.go
+├── internal/
+│   ├── app/
+│   │   ├── domain/user/{entity,valueobject,event,repository,service}/
+│   │   ├── application/{service,dto}/
+│   │   ├── infrastructure/{repository,config,observability,event}/
+│   │   └── interface/http/{handler,dto,middleware,router.go}
+│   └── ent/schema/user.go
 ├── api/openapi.yaml
 ├── configs/config.yaml
 ├── test/integration/

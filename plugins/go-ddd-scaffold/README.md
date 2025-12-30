@@ -93,25 +93,24 @@ my-service/
 ├── api/                   # OpenAPI 规范
 ├── configs/               # 配置文件
 ├── internal/              # 内部代码
-│   └── app/
-│       ├── domain/        # 领域层（核心业务逻辑）
-│       │   └── user/
-│       │       ├── entity/        # 实体
-│       │       ├── valueobject/   # 值对象
-│       │       ├── event/         # 领域事件
-│       │       ├── repository/    # 仓储接口
-│       │       └── service/       # 领域服务
-│       ├── application/   # 应用层（用例编排）
-│       ├── infrastructure/# 基础设施层（技术实现）
-│       │   ├── repository/       # 仓储实现
-│       │   ├── config/           # 配置管理
-│       │   └── observability/    # 可观测性
-│       └── interface/     # 接口层（HTTP API）
-│           ├── handler/          # HTTP 处理器
-│           ├── dto/              # 数据传输对象
-│           └── middleware/       # 中间件
-├── pkg/                   # 公共包
-│   └── ent/              # Ent ORM Schema
+│   ├── app/
+│   │   ├── domain/        # 领域层（核心业务逻辑）
+│   │   │   └── user/
+│   │   │       ├── entity/        # 实体
+│   │   │       ├── valueobject/   # 值对象
+│   │   │       ├── event/         # 领域事件
+│   │   │       ├── repository/    # 仓储接口
+│   │   │       └── service/       # 领域服务
+│   │   ├── application/   # 应用层（用例编排）
+│   │   ├── infrastructure/# 基础设施层（技术实现）
+│   │   │   ├── repository/       # 仓储实现
+│   │   │   ├── config/           # 配置管理
+│   │   │   └── observability/    # 可观测性
+│   │   └── interface/     # 接口层（HTTP API）
+│   │       ├── handler/          # HTTP 处理器
+│   │       ├── dto/              # 数据传输对象
+│   │       └── middleware/       # 中间件
+│   └── ent/               # Ent ORM Schema（私有）
 ├── test/                  # 集成测试
 ├── docs/                  # 文档
 ├── scripts/               # 脚本
@@ -202,7 +201,7 @@ type EntUserRepository struct { ... }
 3. 在 `infrastructure/repository/` 实现仓储
 4. 在 `application/service/` 创建应用服务
 5. 在 `interface/handler/` 添加 HTTP 处理器
-6. 在 `pkg/ent/schema/` 添加 Ent Schema
+6. 在 `internal/ent/schema/` 添加 Ent Schema
 
 ### 运行测试
 
