@@ -124,3 +124,6 @@ claude-code-plugin/
 - [Claude Code 官方文档](https://github.com/anthropics/claude-code)
 - [官方插件市场](https://github.com/anthropics/claude-plugins-official)
 - [plugin-dev 插件文档](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/plugin-dev)
+- [插件文档](https://code.claude.com/docs/zh-CN/plugins)
+- [插件参考文档](https://code.claude.com/docs/zh-CN/plugins-reference)
+- [插件市场文档](https://code.claude.com/docs/zh-CN/plugin-marketplaces)
