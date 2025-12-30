@@ -53,6 +53,33 @@ tools: ["Read", "Write", "Bash", "Glob", "TodoWrite"]
 - `database`: 数据库类型（"mysql" 或 "sqlite"）
 - `include_examples`: 是否包含完整的 CRUD 示例（"yes" 或 "no"）
 
+**⚠️ 重要：路径约束与命名规范**
+
+所有 DDD 四层代码必须严格遵循以下约束：
+
+1. **Domain Layer（领域层）**：`internal/app/domain/<aggregate_name>/{entity,valueobject,event,repository,service}/`
+2. **Application Layer（应用层）**：`internal/app/application/{service,dto}/`
+3. **Infrastructure Layer（基础设施层）**：`internal/app/infrastructure/{repository,config,observability,event}/`
+4. **Interface Layer（接口层）**：`internal/app/interface/http/{handler,dto,middleware}/`
+
+**为什么需要 internal/app/ 这一层：**
+- 符合 Go 标准项目布局（golang-standards/project-layout）
+- `internal/` 表示私有代码，Go 编译器强制执行
+- `app/` 表示应用程序代码，与其他可能的 internal 包（如 internal/pkg）区分
+- 允许未来扩展（如添加 internal/tools、internal/pkg 等）
+- 保持清晰的业务代码边界
+
+**禁止路径（常见错误）**：
+- ❌ `internal/domain/` — 必须是 `internal/app/domain/`
+- ❌ `internal/application/` — 必须是 `internal/app/application/`
+- ❌ `internal/infrastructure/` — 必须是 `internal/app/infrastructure/`
+- ❌ `internal/interface/` — 必须是 `internal/app/interface/`
+
+**特殊路径（正确）**：
+- ✅ `pkg/ent/schema/` — Ent schema 属于可重用的公共代码，放在 pkg 下
+- ✅ `cmd/server/` 和 `cmd/migrate/` — 应用程序入口，放在 cmd 下
+- ✅ `configs/`, `docs/`, `api/` — 项目级配置和文档，放在根目录
+
 **⚠️ 重要：分批执行策略（避免超过 token 限制）**
 
 由于完整项目生成涉及大量文件（37+ 个任务），你必须采用分批执行策略：
@@ -164,7 +191,10 @@ tools: ["Read", "Write", "Bash", "Glob", "TodoWrite"]
 
 4. **创建事件总线接口**
    - `internal/app/domain/event/event_bus.go`
-   - 简单的 Publish/Subscribe 接口
+   - 定义通用的 EventBus 接口（Publish/Subscribe）
+   - 注意：这是通用事件基础设施接口，与具体聚合的事件分离
+   - User 聚合的具体事件（UserCreated、UserUpdated）在 `internal/app/domain/user/event/`
+   - 简单的发布订阅模式，支持事件驱动架构
 
 5. **标记阶段 3 完成**
 
@@ -229,12 +259,20 @@ tools: ["Read", "Write", "Bash", "Glob", "TodoWrite"]
    - `internal/app/interface/http/middleware/cors.go` - CORS 头
    - `internal/app/interface/http/middleware/metrics.go` - Prometheus 指标
 
-4. **创建路由**
+4. **创建路由配置**
    - `internal/app/interface/http/router.go`
    - 使用中间件设置 Gin 引擎
-   - 注册路由：POST/GET/PUT/DELETE /api/v1/users
-   - 健康检查端点：GET /health
-   - 指标端点：GET /metrics
+   - 应用全局中间件（logger, recovery, cors, metrics）
+   - 注册 API 路由组：
+     - POST   /api/v1/users      - CreateUser
+     - GET    /api/v1/users/:id  - GetUser
+     - PUT    /api/v1/users/:id  - UpdateUser
+     - DELETE /api/v1/users/:id  - DeleteUser
+     - GET    /api/v1/users      - ListUsers
+   - 注册系统端点：
+     - GET /health  - 健康检查
+     - GET /metrics - Prometheus 指标
+   - 返回配置好的 *gin.Engine
 
 5. **创建服务器主程序**
    - `cmd/server/main.go`
@@ -348,24 +386,44 @@ tools: ["Read", "Write", "Bash", "Glob", "TodoWrite"]
    go mod tidy
    ```
 
-### 阶段 9: 验证与测试（3 个任务）
+### 阶段 9: 验证与测试（4 个任务）
 
-1. **验证项目构建**
+1. **验证目录结构与路径合规性**
    ```bash
+   # 检查 internal/app/ 四层结构
+   test -d <project_name>/internal/app/domain && echo "✓ Domain layer exists"
+   test -d <project_name>/internal/app/application && echo "✓ Application layer exists"
+   test -d <project_name>/internal/app/infrastructure && echo "✓ Infrastructure layer exists"
+   test -d <project_name>/internal/app/interface && echo "✓ Interface layer exists"
+
+   # 检查禁止路径不存在（确保没有错误生成）
+   ! test -d <project_name>/internal/domain && echo "✓ No forbidden internal/domain/"
+   ! test -d <project_name>/internal/application && echo "✓ No forbidden internal/application/"
+
+   # 检查特殊路径
+   test -d <project_name>/pkg/ent/schema && echo "✓ Ent schema in pkg/"
+   test -d <project_name>/cmd/server && echo "✓ Server cmd exists"
+   ```
+
+2. **验证项目构建**
+   ```bash
+   cd <project_name>
    go build ./cmd/server
    go build ./cmd/migrate
    ```
 
-2. **运行测试**
+3. **运行测试**
    ```bash
    go test ./internal/app/domain/...
    go test ./internal/app/application/...
    ```
 
-3. **最终验证**
-   - 检查所有目录是否存在
-   - 验证 go.mod 和 go.sum 存在
+4. **最终验证**
+   - 检查所有关键目录是否存在
+   - 验证 go.mod 和 go.sum 存在且有效
    - 确认 README 和文档已创建
+   - 验证所有 Go 导入使用正确的 go_module 路径（如 `<go_module>/internal/app/domain/user/entity`）
+   - 检查是否没有禁止的路径模式
 
 **代码质量标准：**
 
@@ -419,6 +477,17 @@ Module: <go_module>
 - **go get 期间网络错误**：重试或建议手动安装
 - **Ent 生成失败**：检查 schema 语法，提供错误详情
 - **构建失败**：显示编译错误，建议修复
+- **路径结构错误**：如果检测到文件生成到错误的路径（如 `internal/domain/` 而不是 `internal/app/domain/`），
+  立即停止生成并提示：
+  ```
+  ❌ 路径结构错误
+  检测到禁止的路径模式。所有 DDD 代码必须使用 `internal/app/` 前缀。
+
+  错误路径示例：internal/domain/ ❌
+  正确路径示例：internal/app/domain/ ✅
+
+  请检查代码生成逻辑，确保所有路径符合规范。
+  ```
 
 **重要说明：**
 
