@@ -1,0 +1,20 @@
+{
+  "name": "go-ddd-scaffold",
+  "version": "0.1.0",
+  "description": "Go Web 项目脚手架生成器 - 基于 DDD 架构、Go 标准布局、Gin+Ent 技术栈的一键项目初始化工具",
+  "author": {
+    "name": "Maguowei",
+    "email": "imaguowei@gmail.com"
+  },
+  "keywords": [
+    "go",
+    "ddd",
+    "scaffold",
+    "gin",
+    "ent",
+    "web",
+    "generator",
+    "clean-architecture"
+  ],
+  "license": "MIT"
+}

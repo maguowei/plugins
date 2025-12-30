@@ -1,0 +1,15 @@
+# Claude Code plugin-specific
+.claude/*.local.md
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.bak
