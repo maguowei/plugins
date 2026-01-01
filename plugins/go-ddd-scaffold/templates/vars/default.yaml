@@ -1,0 +1,123 @@
+# Go DDD Scaffold 默认变量配置
+# 此文件定义所有模板使用的默认变量
+
+# 项目基础信息 (从命令参数获取，运行时由 Agent 填充)
+project:
+  name: ""              # 项目目录名称，如 "my-service"
+  go_module: ""         # Go 模块路径，如 "github.com/myorg/my-service"
+  database: "mysql"     # 数据库类型: "mysql" 或 "sqlite"
+  include_examples: true # 是否包含完整的 CRUD 示例
+
+# Go 环境配置
+go:
+  version: "1.21"
+
+  # 核心依赖列表
+  dependencies:
+    - name: "github.com/gin-gonic/gin"
+      version: "v1.10.0"
+      comment: "Web 框架"
+
+    - name: "entgo.io/ent"
+      version: "v0.13.0"
+      comment: "ORM 框架"
+
+    - name: "github.com/spf13/viper"
+      version: "v1.18.0"
+      comment: "配置管理"
+
+    - name: "github.com/prometheus/client_golang"
+      version: "v1.19.0"
+      comment: "Prometheus 客户端"
+
+    - name: "github.com/getsentry/sentry-go"
+      version: "v0.27.0"
+      comment: "Sentry 错误追踪"
+
+    - name: "github.com/google/uuid"
+      version: "v1.6.0"
+      comment: "UUID 生成"
+
+    - name: "github.com/cloudevents/sdk-go/v2"
+      version: "v2.15.0"
+      comment: "CloudEvents SDK"
+
+    - name: "github.com/stretchr/testify"
+      version: "v1.9.0"
+      comment: "测试框架"
+
+# 路径约束 (DDD 四层架构 + Ent)
+# 这些路径是强制约束，确保符合 golang-standards/project-layout 和 DDD 最佳实践
+paths:
+  # DDD 四层架构路径 (internal/app/ 前缀是强制的)
+  domain: "internal/app/domain"
+  application: "internal/app/application"
+  infrastructure: "internal/app/infrastructure"
+  interface: "internal/app/interface"
+
+  # Ent ORM Schema (私有数据模型)
+  ent_schema: "internal/ent/schema"
+
+  # 应用程序入口
+  cmd: "cmd"
+
+  # 其他标准目录
+  configs: "configs"
+  api: "api"
+  docs: "docs"
+  scripts: "scripts"
+  deployments: "deployments"
+  test: "test"
+
+# 服务器配置
+server:
+  port: "8080"
+  mode: "debug"  # "debug" 或 "release"
+  read_timeout: "10s"
+  write_timeout: "10s"
+
+# 日志配置
+logging:
+  level: "info"     # "debug", "info", "warn", "error"
+  format: "json"    # "json" 或 "text"
+
+# Sentry 配置
+sentry:
+  dsn: ""           # 从环境变量 SENTRY_DSN 读取
+  environment: "development"
+  traces_sample_rate: 1.0
+
+# Prometheus 配置
+prometheus:
+  enabled: true
+  path: "/metrics"
+
+# 健康检查配置
+health:
+  path: "/health"
+
+# CORS 配置
+cors:
+  allowed_origins:
+    - "*"
+  allowed_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "OPTIONS"
+  allowed_headers:
+    - "Origin"
+    - "Content-Type"
+    - "Authorization"
+
+# Docker 配置
+docker:
+  base_image: "golang:1.21-alpine"
+  runtime_image: "alpine:3.19"
+  port: "8080"
+
+# 作者信息 (可选)
+author:
+  name: ""
+  email: ""

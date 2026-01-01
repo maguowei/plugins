@@ -1,0 +1,41 @@
+# SQLite 数据库特定配置
+# 这些变量会覆盖或补充 default.yaml 中的配置
+
+database:
+  type: "sqlite"
+  driver: "sqlite3"
+
+  # DSN 配置
+  dsn_template: "file:${DATABASE_FILE}?cache=shared&_fk=1"
+
+  # 默认 DSN (用于开发环境)
+  default_dsn: "file:data.db?cache=shared&_fk=1"
+
+  # SQLite 文件路径
+  file_path: "./data/data.db"
+
+  # SQLite 特定配置
+  busy_timeout: "5000"  # 毫秒
+  journal_mode: "WAL"   # Write-Ahead Logging
+  synchronous: "NORMAL"
+
+# Docker Compose 配置 (SQLite 不需要独立服务)
+docker_compose:
+  volumes:
+    - "./data:/app/data"
+
+# Go 依赖 (SQLite 驱动)
+go_dependencies:
+  - name: "github.com/mattn/go-sqlite3"
+    version: "v1.14.19"
+    comment: "SQLite 驱动"
+
+# Ent 配置
+ent:
+  dialect: "sqlite3"
+
+# 注意事项
+notes:
+  - "SQLite 适合开发和小型项目"
+  - "生产环境建议使用 MySQL 或 PostgreSQL"
+  - "SQLite 不支持并发写入"

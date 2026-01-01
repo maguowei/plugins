@@ -1,0 +1,14 @@
+# 配置文件生成清单
+# Configs Manifest
+# 负责生成应用程序的配置文件
+
+name: "Configuration Files"
+description: "Application configuration files"
+output_base: "configs"
+batch: 7
+
+files:
+  # 配置文件
+  - template: "config.yaml.tpl"
+    output: "config.yaml"
+    description: "Application configuration file"

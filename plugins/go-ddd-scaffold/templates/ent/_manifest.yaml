@@ -1,0 +1,15 @@
+# Ent ORM Schema 生成清单
+# Ent Schema Manifest
+# 负责生成 Ent ORM 的 Schema 定义
+
+name: "Ent Schema"
+description: "Ent ORM schema definitions"
+output_base: "{{ .Paths.EntSchema }}"
+batch: 6
+
+files:
+  # Ent Schema
+  - template: "schema/schema.go.tpl"
+    output: "{{ .Aggregate.FileNameSnake }}.go"
+    description: "Ent schema for {{ .Entity.NameCN }}"
+    condition: "{{ .IncludeExamples }}"

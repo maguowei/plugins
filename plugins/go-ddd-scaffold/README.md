@@ -13,6 +13,7 @@
 - ✅ **整洁架构**: 遵循依赖倒置原则，核心业务逻辑独立于框架
 - ✅ **SOLID 原则**: 单一职责、开闭原则、里氏替换、接口隔离、依赖倒置
 - ✅ **Go 标准布局**: 符合 golang-standards/project-layout 规范
+- ✅ **模板驱动**: 基于 45+ 个专业模板文件，确保代码质量和一致性
 
 ### 技术栈
 - **Web 框架**: Gin
@@ -176,11 +177,19 @@ type EntUserRepository struct { ... }
 
 ## 插件组件
 
+### Templates（模板系统）
+插件采用**模板驱动架构**，包含 45+ 个专业模板文件：
+- **变量配置**: `templates/vars/` - 项目参数、数据库配置、聚合定义
+- **DDD 四层模板**: `templates/{domain,application,infrastructure,interface}/` - 完整的 DDD 架构模板
+- **配置模板**: `templates/{configs,docker,docs,api,scripts}/` - 配置、容器化、文档模板
+
+详见 [模板系统文档](./templates/README.md)
+
 ### Commands（命令）
 - `/init-go-web` - 交互式项目初始化命令
 
 ### Agents（代理）
-- `go-ddd-scaffold-generator` - 自主生成完整项目结构和代码
+- `go-ddd-scaffold-generator` - 基于模板自主生成完整项目（从 580 行硬编码简化到 282 行）
 
 ### Skills（技能）
 插件包含 6 个详细的技能文档，提供 DDD 和 Go 开发的完整知识：

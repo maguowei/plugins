@@ -1,0 +1,38 @@
+# 基础设施层模板生成清单
+# Infrastructure Layer - 技术实现
+
+name: "Infrastructure Layer"
+description: "基础设施层 - Repository实现, Config, Observability, Event Bus"
+output_base: "{{ .Paths.Infrastructure }}"
+batch: 4
+
+# 文件生成列表
+files:
+  # Repository Implementation
+  - template: "repository/repository_impl.go.tpl"
+    output: "repository/{{ .Repository.FileName }}_impl.go"
+    description: "{{ .Repository.NameCN }}实现"
+    condition: "{{ .IncludeExamples }}"
+
+  # Config
+  - template: "config/config.go.tpl"
+    output: "config/config.go"
+    description: "配置管理"
+
+  # Observability
+  - template: "observability/logger.go.tpl"
+    output: "observability/logger.go"
+    description: "日志配置"
+
+  - template: "observability/metrics.go.tpl"
+    output: "observability/metrics.go"
+    description: "Prometheus 指标"
+
+  - template: "observability/sentry.go.tpl"
+    output: "observability/sentry.go"
+    description: "Sentry 错误追踪"
+
+  # Event Bus
+  - template: "event/memory_event_bus.go.tpl"
+    output: "event/memory_event_bus.go"
+    description: "内存事件总线实现"

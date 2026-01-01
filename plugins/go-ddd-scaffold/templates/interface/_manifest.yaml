@@ -1,0 +1,48 @@
+# 接口层生成清单
+# Interface Layer Manifest
+# 负责 HTTP API 层的生成
+
+name: "Interface Layer"
+description: "HTTP API handlers, DTOs, middleware, and router"
+output_base: "{{ .Paths.Interface }}"
+batch: 5
+
+files:
+  # HTTP Handler
+  - template: "http/handler/handler.go.tpl"
+    output: "http/handler/{{ .Aggregate.FileNameSnake }}_handler.go"
+    description: "HTTP handler for {{ .Aggregate.NameCN }}"
+    condition: "{{ .IncludeExamples }}"
+
+  # HTTP DTOs
+  - template: "http/dto/request.go.tpl"
+    output: "http/dto/{{ .Aggregate.FileNameSnake }}_request.go"
+    description: "HTTP request DTOs for {{ .Aggregate.NameCN }}"
+    condition: "{{ .IncludeExamples }}"
+
+  - template: "http/dto/response.go.tpl"
+    output: "http/dto/{{ .Aggregate.FileNameSnake }}_response.go"
+    description: "HTTP response DTOs for {{ .Aggregate.NameCN }}"
+    condition: "{{ .IncludeExamples }}"
+
+  # Middleware
+  - template: "http/middleware/logger.go.tpl"
+    output: "http/middleware/logger.go"
+    description: "Logging middleware"
+
+  - template: "http/middleware/recovery.go.tpl"
+    output: "http/middleware/recovery.go"
+    description: "Panic recovery middleware"
+
+  - template: "http/middleware/cors.go.tpl"
+    output: "http/middleware/cors.go"
+    description: "CORS middleware"
+
+  - template: "http/middleware/metrics.go.tpl"
+    output: "http/middleware/metrics.go"
+    description: "Metrics middleware"
+
+  # Router
+  - template: "http/router.go.tpl"
+    output: "http/router.go"
+    description: "HTTP router configuration"

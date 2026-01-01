@@ -1,0 +1,26 @@
+# 应用层模板生成清单
+# Application Layer - 用例编排
+
+name: "Application Layer"
+description: "应用层 - Application Service, DTO"
+output_base: "{{ .Paths.Application }}"
+batch: 3
+
+# 文件生成列表
+files:
+  # Application Service (应用服务)
+  - template: "service/application_service.go.tpl"
+    output: "service/{{ .ApplicationService.FileName }}.go"
+    description: "{{ .ApplicationService.NameCN }}"
+    condition: "{{ .IncludeExamples }}"
+
+  - template: "service/application_service_test.go.tpl"
+    output: "service/{{ .ApplicationService.FileName }}_test.go"
+    description: "{{ .ApplicationService.NameCN }}测试"
+    condition: "{{ .IncludeExamples }}"
+
+  # Application DTO
+  - template: "dto/dto.go.tpl"
+    output: "dto/{{ .Aggregate.Name }}_dto.go"
+    description: "{{ .Entity.NameCN }} DTO"
+    condition: "{{ .IncludeExamples }}"

@@ -1,0 +1,26 @@
+# 基础结构模板生成清单
+# 定义项目根目录的基础文件生成规则
+
+name: "Base Structure"
+description: "项目基础结构文件 (.gitignore, go.mod, README.md, Makefile)"
+output_base: "."
+batch: 1
+
+# 文件生成列表
+files:
+  - template: "gitignore.tpl"
+    output: ".gitignore"
+    description: "Git 忽略文件配置"
+
+  - template: "go_mod.tpl"
+    output: "go.mod"
+    description: "Go 模块定义文件"
+
+  - template: "README.tpl"
+    output: "README.md"
+    description: "项目说明文档"
+
+  - template: "Makefile.tpl"
+    output: "Makefile"
+    description: "Make 构建脚本"
+    condition: "{{ .IncludeMakefile }}"

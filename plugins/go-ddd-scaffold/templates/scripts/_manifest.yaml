@@ -1,0 +1,24 @@
+# 脚本生成清单
+# Scripts Manifest
+# 负责生成项目脚本文件
+
+name: "Scripts"
+description: "Build, migration, and development scripts"
+output_base: "scripts"
+batch: 8
+
+files:
+  # 构建脚本
+  - template: "build.sh.tpl"
+    output: "build.sh"
+    description: "Build script for compiling binaries"
+
+  # 迁移脚本
+  - template: "migrate.sh.tpl"
+    output: "migrate.sh"
+    description: "Database migration script"
+
+  # 代码检查脚本
+  - template: "lint.sh.tpl"
+    output: "lint.sh"
+    description: "Code linting script"

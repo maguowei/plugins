@@ -1,0 +1,45 @@
+# MySQL 数据库特定配置
+# 这些变量会覆盖或补充 default.yaml 中的配置
+
+database:
+  type: "mysql"
+  driver: "mysql"
+
+  # DSN 配置 (从环境变量读取)
+  dsn_template: "${DATABASE_USER}:${DATABASE_PASSWORD}@tcp(${DATABASE_HOST}:${DATABASE_PORT})/${DATABASE_NAME}?parseTime=true&loc=Local"
+
+  # 默认 DSN (用于 docker-compose 开发环境)
+  default_dsn: "root:password@tcp(localhost:3306)/mydb?parseTime=true&loc=Local"
+
+  # 连接池配置
+  max_open_conns: 25
+  max_idle_conns: 25
+  conn_max_lifetime: "5m"
+
+  # MySQL 特定配置
+  charset: "utf8mb4"
+  collation: "utf8mb4_unicode_ci"
+
+# Docker Compose MySQL 服务配置
+docker_compose:
+  mysql:
+    image: "mysql:8.0"
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: "mydb"
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "password"
+    ports:
+      - "3306:3306"
+    volumes:
+      - "mysql_data:/var/lib/mysql"
+
+# Go 依赖 (MySQL 驱动)
+go_dependencies:
+  - name: "github.com/go-sql-driver/mysql"
+    version: "v1.7.1"
+    comment: "MySQL 驱动"
+
+# Ent 配置
+ent:
+  dialect: "mysql"
