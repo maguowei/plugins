@@ -59,92 +59,135 @@ DDD 四层必须使用 `internal/app/` 前缀：
 
 ## 生成流程
 
+**⚠️ 关键原则：必须实际执行操作，不能只报告完成！**
+
+每个步骤必须：
+1. ✅ 先使用工具（Read/Write/Bash）**实际执行**操作
+2. ✅ 确认操作成功后，才能报告完成
+3. ❌ 禁止在未执行操作的情况下报告"已完成"
+
 ### 阶段 0: 准备工作
 
+**必须实际执行以下操作**：
+
 1. **验证输入参数**
-   - 检查所有必需参数是否提供
-   - 验证 Go 是否已安装：`go version`
-   - 检查项目目录是否已存在
+   - ✅ 使用 Bash 工具执行：`go version`（验证 Go 已安装）
+   - ✅ 使用 Bash 工具执行：`test -d ${project_name} && echo "exists" || echo "not exists"`（检查目录）
+   - ❌ 如果目录已存在或 Go 未安装，立即报错停止
 
 2. **读取并合并变量配置**
-   ```
-   1. 读取 ${CLAUDE_PLUGIN_ROOT}/templates/vars/default.yaml
-   2. 读取 ${CLAUDE_PLUGIN_ROOT}/templates/vars/db_${database}.yaml
-   3. 如果 include_examples=yes，读取 ${CLAUDE_PLUGIN_ROOT}/templates/vars/aggregates/user.yaml
-   4. 合并变量，构建完整的数据结构
+
+   **必须使用 Read 工具实际读取以下文件**：
+   - ✅ Read `${CLAUDE_PLUGIN_ROOT}/templates/vars/default.yaml`
+   - ✅ Read `${CLAUDE_PLUGIN_ROOT}/templates/vars/db_${database}.yaml`
+   - ✅ 如果 include_examples=yes，Read `${CLAUDE_PLUGIN_ROOT}/templates/vars/aggregates/user.yaml`
+
+   读取后，在内存中合并这些 YAML 数据，构建完整的变量映射表。
+
+3. **创建项目目录结构**
+
+   **必须使用 Bash 工具实际创建目录**：
+   ```bash
+   mkdir -p ${project_name}/{cmd/{server,migrate},internal/{app/{domain,application,infrastructure,interface},ent/schema},api,configs,test/integration,docs,scripts,deployments/{docker,k8s}}
    ```
 
-3. **创建 TodoWrite 任务列表**
-   - 基于 8 个批次创建任务
-   - 标记批次 1 为 in_progress
+4. **创建 TodoWrite 任务列表**
+   - ✅ 使用 TodoWrite 工具创建 8 个批次任务
+   - ✅ 标记批次 1 为 in_progress
 
 ### 批次 1: 基础结构（base/ 模板）- Batch 1
 
-1. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/base/_manifest.yaml`
-2. 遍历每个文件定义：
-   - 读取模板文件（.tpl）
-   - 使用变量数据渲染模板（替换 {{ .变量 }}）
-   - Write 到目标路径
-3. 初始化 Go 模块：`cd ${project_name} && go mod init ${go_module}`
-4. 更新 TodoWrite：批次 1 完成
-5. **停止并等待用户输入 'continue'**
+**⚠️ 必须实际执行以下操作，不能只描述！**
 
-### 批次 2: 领域层（domain/ 模板）- Batch 2
+1. **读取 Manifest**
+   - ✅ 使用 Read 工具：`${CLAUDE_PLUGIN_ROOT}/templates/base/_manifest.yaml`
+   - 解析 manifest 中的文件列表
 
-1. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/domain/_manifest.yaml`
-2. 按照 manifest 中的定义生成所有领域层文件
-3. 渲染时注意条件判断（`condition` 字段）
-4. 更新 TodoWrite：批次 2 完成
-5. **停止并等待用户输入 'continue'**
+2. **生成每个文件（必须逐个执行 Read 和 Write）**
 
-### 批次 3: 应用层（application/ 模板）- Batch 3
+   对于 manifest 中的每个文件：
 
-1. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/application/_manifest.yaml`
-2. 生成应用服务和 DTO
-3. 更新 TodoWrite：批次 3 完成
-4. **停止并等待用户输入 'continue'**
+   **步骤 A：读取模板**
+   - ✅ 使用 Read 工具读取模板文件（例如：`${CLAUDE_PLUGIN_ROOT}/templates/base/gitignore.tpl`）
 
-### 批次 4: 基础设施层（infrastructure/ 模板）- Batch 4
+   **步骤 B：渲染模板**
+   - 在模板内容中替换所有变量（例如：`{{ .Project.Name }}` → 实际项目名）
+   - 处理条件语句（`{{ if ... }}`）和循环（`{{ range ... }}`）
 
-1. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/infrastructure/_manifest.yaml`
-2. 生成仓储实现、配置、可观测性组件
-3. 更新 TodoWrite：批次 4 完成
-4. **停止并等待用户输入 'continue'**
+   **步骤 C：写入文件**
+   - ✅ 使用 Write 工具将渲染后的内容写入目标路径（例如：`${project_name}/.gitignore`）
 
-### 批次 5: 接口层（interface/ 模板）- Batch 5
+   **重要**：必须为 manifest 中的每个文件执行 Read + Write，包括：
+   - `.gitignore`
+   - `go.mod`
+   - `README.md`
+   - `Makefile`
 
-1. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/interface/_manifest.yaml`
-2. 生成 Handler、DTO、Middleware、Router
-3. 更新 TodoWrite：批次 5 完成
-4. **停止并等待用户输入 'continue'**
+3. **初始化 Go 模块**
+   - ✅ 使用 Bash 工具执行：`cd ${project_name} && go mod init ${go_module}`
+   - 验证 `go.mod` 文件已创建
 
-### 批次 6: Ent & CMD（ent/ 和 cmd/ 模板）- Batch 6
+4. **更新进度**
+   - ✅ 使用 TodoWrite 工具标记批次 1 为 completed
+   - ✅ 使用 TodoWrite 工具标记批次 2 为 in_progress
 
-1. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/ent/_manifest.yaml`
-2. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/cmd/_manifest.yaml`
-3. 生成 Ent Schema 和命令行入口
-4. 更新 TodoWrite：批次 6 完成
-5. **停止并等待用户输入 'continue'**
+5. **报告并停止**
+   - 列出本批次生成的所有文件（实际路径）
+   - 输出进度：1/8 个批次完成
+   - **停止并等待用户输入 'continue' 或 '继续'**
 
-### 批次 7: 配置 & Docker（configs/ 和 docker/ 模板）- Batch 7
+### 批次 2-8: 其他层（使用相同的执行模式）
 
-1. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/configs/_manifest.yaml`
-2. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/docker/_manifest.yaml`
-3. 生成配置文件和 Docker 相关文件
-4. 更新 TodoWrite：批次 7 完成
-5. **停止并等待用户输入 'continue'**
+**对于批次 2-8，必须重复以下操作模式**：
 
-### 批次 8: 文档、API、脚本（docs/, api/, scripts/ 模板）- Batch 8
+1. **读取 Manifest**
+   - ✅ 使用 Read 工具读取对应的 `_manifest.yaml` 文件
+   - 解析文件列表和条件
 
-1. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/docs/_manifest.yaml`
-2. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/api/_manifest.yaml`
-3. 读取 `${CLAUDE_PLUGIN_ROOT}/templates/scripts/_manifest.yaml`
-4. 生成文档、OpenAPI 规范和脚本文件
-5. 设置脚本可执行权限：`chmod +x scripts/*.sh`
-6. 更新 TodoWrite：批次 8 完成
-7. **停止并等待用户输入 'continue'**
+2. **逐个生成文件**
+
+   对于 manifest 中的每个文件：
+
+   **步骤 A：检查条件**
+   - 如果文件有 `condition` 字段，评估条件
+   - 如果条件为 false，跳过该文件
+
+   **步骤 B：读取模板**
+   - ✅ 使用 Read 工具读取模板文件
+
+   **步骤 C：渲染模板**
+   - 替换所有变量（`{{ .Variable }}`）
+   - 处理条件和循环
+
+   **步骤 D：写入文件**
+   - ✅ 使用 Write 工具写入目标路径
+   - 如果是 User 聚合相关文件，路径应为 `internal/app/domain/user/...`
+
+3. **特殊操作**
+   - 批次 6：如果需要创建子目录（如 `internal/app/domain/user/entity/`），先使用 Bash 创建
+   - 批次 8：生成脚本后，使用 Bash 执行 `chmod +x ${project_name}/scripts/*.sh`
+
+4. **更新进度**
+   - ✅ 使用 TodoWrite 标记当前批次为 completed
+   - ✅ 使用 TodoWrite 标记下一批次为 in_progress
+
+5. **报告并停止**
+   - 列出本批次生成的所有文件
+   - 输出进度
+   - **停止并等待用户输入 'continue' 或 '继续'**
+
+**批次清单**：
+- **批次 2**: `templates/domain/` - 领域层（~10 个文件）
+- **批次 3**: `templates/application/` - 应用层（~4 个文件）
+- **批次 4**: `templates/infrastructure/` - 基础设施层（~6 个文件）
+- **批次 5**: `templates/interface/` - 接口层（~9 个文件）
+- **批次 6**: `templates/ent/` + `templates/cmd/` - Ent Schema 和 CMD（~5 个文件）
+- **批次 7**: `templates/configs/` + `templates/docker/` - 配置和 Docker（~3 个文件）
+- **批次 8**: `templates/docs/` + `templates/api/` + `templates/scripts/` - 文档和脚本（~7 个文件）
 
 ### 阶段 9: 依赖安装与验证
+
+**必须实际执行以下 Bash 命令**：
 
 1. **安装 Go 依赖**
    ```bash
@@ -160,40 +203,33 @@ DDD 四层必须使用 `internal/app/` 前缀：
    ```
 
 2. **安装数据库驱动**
-   - MySQL: `go get -u github.com/go-sql-driver/mysql`
-   - SQLite: `go get -u github.com/mattn/go-sqlite3`
+   - ✅ MySQL: 使用 Bash 执行 `cd ${project_name} && go get -u github.com/go-sql-driver/mysql`
+   - ✅ SQLite: 使用 Bash 执行 `cd ${project_name} && go get -u github.com/mattn/go-sqlite3`
 
 3. **安装测试依赖**
    ```bash
+   cd ${project_name}
    go get -u github.com/stretchr/testify/assert
    go get -u github.com/stretchr/testify/mock
    ```
 
 4. **生成 Ent 代码**
-   ```bash
-   go run -mod=mod entgo.io/ent/cmd/ent generate ./internal/ent/schema
-   ```
+   - ✅ 使用 Bash 执行：`cd ${project_name} && go run -mod=mod entgo.io/ent/cmd/ent generate ./internal/ent/schema`
 
 5. **运行 go mod tidy**
-   ```bash
-   go mod tidy
-   ```
+   - ✅ 使用 Bash 执行：`cd ${project_name} && go mod tidy`
 
 6. **验证构建**
-   ```bash
-   go build ./cmd/server
-   go build ./cmd/migrate
-   ```
+   - ✅ 使用 Bash 执行：`cd ${project_name} && go build ./cmd/server`
+   - ✅ 使用 Bash 执行：`cd ${project_name} && go build ./cmd/migrate`
 
 7. **运行测试**
-   ```bash
-   go test ./internal/app/domain/...
-   go test ./internal/app/application/...
-   ```
+   - ✅ 使用 Bash 执行：`cd ${project_name} && go test ./internal/app/domain/...`
+   - ✅ 使用 Bash 执行：`cd ${project_name} && go test ./internal/app/application/...`
 
 8. **验证路径结构**
-   - 检查 `internal/app/` 四层是否存在
-   - 确认不存在禁止路径（`internal/domain/` 等）
+   - ✅ 使用 Bash 执行：`ls -la ${project_name}/internal/app/`（检查四层是否存在）
+   - ✅ 使用 Bash 执行：`test -d ${project_name}/internal/domain && echo "ERROR: 禁止路径存在" || echo "OK"`
 
 ## 模板渲染规则
 
@@ -277,5 +313,68 @@ Module: ${go_module}
 3. **路径约束**：严格检查 `internal/app/` 前缀
 4. **TodoWrite 跟踪**：始终更新任务状态
 5. **变量合并**：正确合并 default + database + aggregate 变量
+6. **⚠️ 最关键**：**必须实际执行工具操作，禁止只描述不执行！**
+
+## ✅ 正确示例：实际执行操作
+
+```
+用户: 生成项目
+
+Agent 思考：我需要读取模板并写入文件
+
+Agent 操作 1：
+- 使用 Read 工具读取 ${CLAUDE_PLUGIN_ROOT}/templates/base/gitignore.tpl
+- 获得内容：
+  # Binaries for programs and plugins
+  *.exe
+  *.exe~
+  ...
+
+Agent 操作 2：
+- 渲染模板（替换变量）
+- 生成最终内容：
+  # Binaries for programs and plugins
+  *.exe
+  *.exe~
+  ...
+
+Agent 操作 3：
+- 使用 Write 工具写入 ${project_name}/.gitignore
+- 内容为渲染后的结果
+
+Agent 报告：
+✅ 已生成文件：/path/to/project/.gitignore
+```
+
+## ❌ 错误示例：只报告不执行
+
+```
+用户: 生成项目
+
+Agent 思考：我需要生成 .gitignore 文件
+
+Agent 输出：
+✅ 批次 1 完成
+本批次已生成：
+📁 /path/to/project/.gitignore
+📁 /path/to/project/go.mod
+...
+
+（但 Agent 从未使用 Read 或 Write 工具！）
+
+结果：文件实际上不存在！❌
+```
+
+## 执行检查清单
+
+在报告"批次 X 完成"之前，确认：
+
+- [ ] 是否使用 Read 工具读取了 _manifest.yaml？
+- [ ] 是否使用 Read 工具读取了每个 .tpl 模板文件？
+- [ ] 是否使用 Write 工具写入了每个目标文件？
+- [ ] 是否使用 Bash 工具执行了必要的命令（mkdir, chmod, go mod init 等）？
+- [ ] 是否使用 TodoWrite 工具更新了任务状态？
+
+**只有当所有操作都实际执行后，才能报告完成！**
 
 开始生成时，先验证输入参数，读取变量配置，创建 TodoWrite 任务列表，然后从批次 1 开始执行。
