@@ -3,16 +3,13 @@ name: init-go-web
 description: 初始化一个新的 Go Web 项目,使用 DDD 架构和标准技术栈 (Gin + Ent + Viper + slog + Prometheus + Sentry)
 argument-hint: "[--name <project-name>] [--db mysql|sqlite] [--module <go-module-path>]"
 allowed-tools:
-  - Read
-  - Write
   - Bash
   - AskUserQuestion
-  - Task
 ---
 
 # 初始化 Go DDD Web 项目
 
-使用交互式方式创建一个完整的 Go Web 项目,包含 DDD 四层架构、完整的 CRUD 示例、Docker 配置和文档。
+使用脚本驱动的方式创建一个完整的 Go Web 项目,包含 DDD 四层架构、完整的 CRUD 示例、Docker 配置和文档。
 
 ## 执行流程
 
@@ -25,40 +22,47 @@ allowed-tools:
    - 验证: 只包含小写字母、数字和连字符
    - 用于创建项目目录
 
-2. **Go Module 路径** (可选):
-   - 提示: "Go module 路径 (默认: github.com/user/<项目名>)"
-   - 默认值: `github.com/user/<项目名>`
+2. **Go Module 路径** (必需):
+   - 提示: "Go module 路径 (如: github.com/myorg/my-service)"
    - 用于 `go mod init`
 
-3. **数据库类型** (可选):
+3. **数据库类型** (必需):
    - 选项: `mysql` 或 `sqlite`
    - 默认: `mysql`
    - 影响 Ent schema 和 docker-compose 配置
 
-4. **是否包含完整示例** (可选):
+4. **是否包含完整示例** (必需):
    - 选项: `yes` 或 `no`
    - 默认: `yes`
    - 如果选 `yes`,生成完整的 User CRUD 示例代码
 
-### 第 2 步: 调用项目生成器 Agent
+### 第 2 步: 调用生成脚本
 
-将收集到的信息传递给 `go-ddd-scaffold-generator` Agent:
+使用 Bash 工具执行以下命令:
 
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/generate.sh \
+  "<project_name>" \
+  "<go_module>" \
+  "<database>" \
+  "<include_examples>" \
+  "${CLAUDE_PLUGIN_ROOT}"
 ```
-请使用以下配置生成 Go DDD 项目:
-- 项目名称: <name>
-- Go Module: <module>
-- 数据库: <database>
-- 包含示例: <include-examples>
-```
 
-Agent 将自动完成:
+**重要**:
+- 确保替换所有 `<参数>` 为实际值
+- 项目名称需要加引号以处理特殊字符
+- `${CLAUDE_PLUGIN_ROOT}` 会自动展开为插件根目录
+
+脚本将自动完成:
+- 验证环境（Go、Python3、依赖）
 - 创建完整目录结构
-- 生成所有四层代码
+- 生成所有四层代码（45+ 个文件）
 - 配置 Docker 和 docker-compose
 - 初始化 Go modules
 - 安装依赖
-- 生成 Ent schema
+- 生成 Ent ORM 代码
+- 验证构建
 - 创建文档
 
 ### 第 3 步: 显示后续步骤
@@ -75,7 +79,7 @@ Agent 将自动完成:
 1. 进入项目目录:
    cd <project-name>
 
-2. 启动数据库 (如果使用 Docker):
+2. 启动数据库 (如果使用 MySQL):
    docker-compose up -d db
 
 3. 运行数据库迁移:
@@ -91,7 +95,7 @@ Agent 将自动完成:
 6. 查看文档:
    - 架构设计: docs/architecture.md
    - 开发指南: docs/development.md
-   - API 文档: docs/api.md
+   - 部署指南: docs/deployment.md
 
 7. 运行测试:
    go test ./...
@@ -129,17 +133,9 @@ Agent 将自动完成:
 3. 数据库类型: mysql
 4. 包含示例: yes
 
-[Agent 自动生成项目]
+[脚本自动生成项目]
 
 系统显示: ✅ 项目创建成功! [后续步骤]
-```
-
-### 带参数使用
-
-```
-用户: /init-go-web --name my-service --db sqlite --module github.com/me/my-service
-
-[直接调用 Agent,不询问]
 ```
 
 ## 错误处理
@@ -149,21 +145,57 @@ Agent 将自动完成:
 - **项目名称无效**: "项目名称只能包含小写字母、数字和连字符"
 - **目录已存在**: "目录 '<name>' 已存在,请选择其他名称或删除现有目录"
 - **Go 未安装**: "未检测到 Go,请先安装 Go 1.21+"
+- **Python3 未安装**: "未检测到 Python3,请先安装 Python 3.8+"
+- **依赖未安装**: "Jinja2 或 PyYAML 未安装,请运行: pip3 install jinja2 pyyaml"
 - **依赖安装失败**: "依赖安装失败: <error>,请检查网络连接"
+
+## 前置依赖
+
+运行此命令前,请确保已安装:
+
+1. **Go 1.21+**
+   ```bash
+   # macOS
+   brew install go
+
+   # 验证
+   go version
+   ```
+
+2. **Python 3.8+**
+   ```bash
+   # macOS
+   brew install python3
+
+   # 验证
+   python3 --version
+   ```
+
+3. **Python 依赖**
+   ```bash
+   pip3 install jinja2 pyyaml
+   ```
+
+4. **Docker** (可选,用于运行数据库)
+   ```bash
+   # macOS
+   brew install --cask docker
+   ```
 
 ## 注意事项
 
-- 确保在调用 Agent 前验证所有输入
-- 项目生成过程可能需要几分钟 (下载依赖)
+- 确保在调用脚本前验证所有输入
+- 项目生成过程可能需要几分钟 (下载 Go 依赖)
 - 生成的项目目录在当前工作目录下
 - 不要覆盖现有目录
+- 脚本会自动验证环境并提供清晰的错误提示
 
-## 相关技能
+## 相关文档
 
-此命令会自动加载以下技能供 Agent 使用:
-- ddd-core-concepts
-- ddd-layered-architecture
-- go-project-structure
-- go-tech-stack-integration
-- clean-architecture-principles
-- cloudevents-pattern
+此命令生成的项目包含以下文档:
+- DDD 核心概念 (参考 ddd-core-concepts skill)
+- DDD 四层架构 (参考 ddd-layered-architecture skill)
+- Go 项目结构 (参考 go-project-structure skill)
+- 技术栈集成 (参考 go-tech-stack-integration skill)
+- Clean Architecture 原则 (参考 clean-architecture-principles skill)
+- CloudEvents 模式 (参考 cloudevents-pattern skill)
