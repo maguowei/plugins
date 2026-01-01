@@ -38,14 +38,45 @@
 ## 快速开始
 
 ### 前置要求
-- Claude Code CLI 已安装
-- Go 1.21+ 已安装
-- Docker 已安装（可选，用于容器化运行）
+
+1. **Claude Code CLI** 已安装
+2. **Go 1.21+** 已安装
+   ```bash
+   # macOS
+   brew install go
+
+   # 验证
+   go version
+   ```
+
+3. **Python 3.8+** 已安装（用于模板渲染）
+   ```bash
+   # macOS
+   brew install python3
+
+   # 验证
+   python3 --version
+   ```
+
+4. **Python 依赖** 已安装
+   ```bash
+   pip3 install jinja2 pyyaml
+   ```
+
+5. **Docker** 已安装（可选，用于容器化运行数据库）
+   ```bash
+   # macOS
+   brew install --cask docker
+   ```
 
 ### 安装插件
 
 1. 克隆插件仓库或复制插件目录到 `.claude-plugin/`
-2. 启动 Claude Code 时指定插件目录：
+2. 安装 Python 依赖：
+   ```bash
+   pip3 install -r /path/to/plugins/go-ddd-scaffold/scripts/requirements.txt
+   ```
+3. 启动 Claude Code 时指定插件目录：
    ```bash
    cc --plugin-dir /path/to/plugins/go-ddd-scaffold
    ```
@@ -177,8 +208,47 @@ type EntUserRepository struct { ... }
 
 ## 插件组件
 
+### 核心架构
+
+插件采用**脚本驱动渲染**替代 Agent 自主生成，确保文件100%实际创建：
+
+```
+/init-go-web 命令
+    ↓
+scripts/generate.sh (Bash)
+    ↓
+scripts/render.py (Python + Jinja2)
+    ↓
+templates/ (45+ 模板文件)
+    ↓
+生成的 Go DDD 项目
+```
+
+### Scripts（脚本系统）
+
+**scripts/render.py** (Python 模板渲染器):
+- 使用 Jinja2 模板引擎渲染所有文件
+- 自动加载和合并 YAML 变量配置
+- 支持 Go text/template 语法自动转换
+- 解析 manifest 文件批量生成代码
+
+**scripts/generate.sh** (项目生成脚本):
+- 环境验证（Go、Python3、依赖）
+- 8 个批次分别生成不同层的文件
+- 自动安装 Go 依赖
+- 生成 Ent ORM 代码
+- 验证项目构建
+
+**优势**:
+- ✅ **确定性执行** - 保证文件实际创建
+- ✅ **快速生成** - 无需 LLM 推理，< 30 秒完成
+- ✅ **零 Token 消耗** - 脚本不消耗 Claude token
+- ✅ **易于调试** - 可直接运行脚本测试
+- ✅ **完整测试** - 支持单元测试和集成测试
+
 ### Templates（模板系统）
-插件采用**模板驱动架构**，包含 45+ 个专业模板文件：
+
+插件包含 45+ 个专业模板文件：
 - **变量配置**: `templates/vars/` - 项目参数、数据库配置、聚合定义
 - **DDD 四层模板**: `templates/{domain,application,infrastructure,interface}/` - 完整的 DDD 架构模板
 - **配置模板**: `templates/{configs,docker,docs,api,scripts}/` - 配置、容器化、文档模板
@@ -186,12 +256,11 @@ type EntUserRepository struct { ... }
 详见 [模板系统文档](./templates/README.md)
 
 ### Commands（命令）
-- `/init-go-web` - 交互式项目初始化命令
 
-### Agents（代理）
-- `go-ddd-scaffold-generator` - 基于模板自主生成完整项目（从 580 行硬编码简化到 282 行）
+- `/init-go-web` - 交互式项目初始化命令（调用脚本生成）
 
 ### Skills（技能）
+
 插件包含 6 个详细的技能文档，提供 DDD 和 Go 开发的完整知识：
 
 1. **ddd-core-concepts** - DDD 核心概念详解
