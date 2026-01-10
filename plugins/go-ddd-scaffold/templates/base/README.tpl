@@ -1,6 +1,6 @@
-# {{ .ProjectName }}
+# {{ Project.Name }}
 
-{{ .ProjectDescription | default "基于 DDD 架构的 Go Web 服务" }}
+{% if Project.Description %}{{ Project.Description }}{% else %}基于 DDD 架构的 Go Web 服务{% endif %}
 
 ## 项目概述
 
@@ -8,9 +8,9 @@
 
 ### 技术栈
 
-- **Web 框架**: Gin {{ .Go.Dependencies | findByName "github.com/gin-gonic/gin" | getVersion }}
-- **ORM**: Ent {{ .Go.Dependencies | findByName "entgo.io/ent" | getVersion }}
-- **数据库**: {{ .Database | upper }}
+- **Web 框架**: Gin
+- **ORM**: Ent
+- **数据库**: {{ Project.Database | upper }}
 - **配置管理**: Viper
 - **日志**: slog (Go 标准库)
 - **监控**: Prometheus
@@ -22,7 +22,7 @@
 本项目严格遵循 DDD 四层架构：
 
 ```
-{{ .ProjectName }}/
+{{ Project.Name }}/
 ├── cmd/                          # 应用程序入口
 │   ├── server/                   # HTTP 服务器
 │   └── migrate/                  # 数据库迁移工具
@@ -46,12 +46,12 @@
 
 ### 前置要求
 
-- Go {{ .Go.Version }}+
-{{- if eq .Database "mysql" }}
+- Go {{ Go.Version }}+
+{% if Project.Database == "mysql" %}
 - MySQL 8.0+
-{{- else if eq .Database "sqlite" }}
+{% elif Project.Database == "sqlite" %}
 - SQLite 3+
-{{- end }}
+{% endif %}
 - Docker & Docker Compose (可选)
 
 ### 本地开发
@@ -60,7 +60,7 @@
 
 ```bash
 git clone <repository-url>
-cd {{ .ProjectName }}
+cd {{ Project.Name }}
 ```
 
 2. **安装依赖**
@@ -79,11 +79,11 @@ cp configs/config.yaml configs/config.local.yaml
 4. **启动数据库** (使用 Docker)
 
 ```bash
-{{- if eq .Database "mysql" }}
+{% if Project.Database == "mysql" %}
 docker-compose up -d db
-{{- else }}
+{% else %}
 # SQLite 无需额外启动
-{{- end }}
+{% endif %}
 ```
 
 5. **运行数据库迁移**
@@ -98,7 +98,7 @@ go run ./cmd/migrate
 go run ./cmd/server
 ```
 
-服务器将在 `http://localhost:{{ .Server.Port }}` 启动。
+服务器将在 `http://localhost:{{ Server.Port }}` 启动。
 
 ### 使用 Docker Compose
 
@@ -115,18 +115,18 @@ docker-compose up
 ### API 文档
 
 - **OpenAPI 规范**: [api/openapi.yaml](api/openapi.yaml)
-- **在线文档**: 启动服务器后访问 `http://localhost:{{ .Server.Port }}/swagger`
+- **在线文档**: 启动服务器后访问 `http://localhost:{{ Server.Port }}/swagger`
 
 ### 健康检查
 
 ```bash
-curl http://localhost:{{ .Server.Port }}/health
+curl http://localhost:{{ Server.Port }}/health
 ```
 
 ### Prometheus 指标
 
 ```bash
-curl http://localhost:{{ .Server.Port }}/metrics
+curl http://localhost:{{ Server.Port }}/metrics
 ```
 
 ## 测试
@@ -171,7 +171,7 @@ go build -o bin/migrate ./cmd/migrate
 ### 构建 Docker 镜像
 
 ```bash
-docker build -t {{ .ProjectName }}:latest .
+docker build -t {{ Project.Name }}:latest .
 ```
 
 ## 部署
@@ -182,17 +182,17 @@ docker build -t {{ .ProjectName }}:latest .
 
 | 变量名 | 描述 | 默认值 |
 |-------|------|--------|
-{{- if eq .Database "mysql" }}
+{% if Project.Database == "mysql" %}
 | `DATABASE_HOST` | 数据库主机 | `localhost` |
 | `DATABASE_PORT` | 数据库端口 | `3306` |
 | `DATABASE_USER` | 数据库用户 | `root` |
 | `DATABASE_PASSWORD` | 数据库密码 | - |
-| `DATABASE_NAME` | 数据库名称 | `{{ .ProjectName }}` |
-{{- else if eq .Database "sqlite" }}
+| `DATABASE_NAME` | 数据库名称 | `{{ Project.Name }}` |
+{% elif Project.Database == "sqlite" %}
 | `DATABASE_FILE` | SQLite 数据库文件路径 | `./data/data.db` |
-{{- end }}
-| `SERVER_PORT` | 服务器端口 | `{{ .Server.Port }}` |
-| `LOG_LEVEL` | 日志级别 | `{{ .Logging.Level }}` |
+{% endif %}
+| `SERVER_PORT` | 服务器端口 | `{{ Server.Port }}` |
+| `LOG_LEVEL` | 日志级别 | `{{ Logging.Level }}` |
 | `SENTRY_DSN` | Sentry DSN | - |
 
 ## 贡献
@@ -205,12 +205,12 @@ docker build -t {{ .ProjectName }}:latest .
 
 ## 联系方式
 
-{{- if .Author.Name }}
-- 作者: {{ .Author.Name }}
-{{- end }}
-{{- if .Author.Email }}
-- 邮箱: {{ .Author.Email }}
-{{- end }}
+{% if Author and Author.Name %}
+- 作者: {{ Author.Name }}
+{% endif %}
+{% if Author and Author.Email %}
+- 邮箱: {{ Author.Email }}
+{% endif %}
 
 ---
 

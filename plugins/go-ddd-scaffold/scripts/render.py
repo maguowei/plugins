@@ -66,12 +66,14 @@ class TemplateRenderer:
         return result
 
     def capitalize_keys(self, data: Any) -> Any:
-        """将字典的顶级键首字母大写（递归处理）"""
+        """将字典的键首字母大写并转换为驼峰命名（递归处理）"""
         if isinstance(data, dict):
             result = {}
             for key, value in data.items():
-                # 首字母大写
-                new_key = key[0].upper() + key[1:] if key else key
+                # 将下划线命名转换为驼峰命名
+                # 例如: go_dependencies -> GoDependencies
+                parts = key.split('_')
+                new_key = ''.join(part.capitalize() for part in parts)
                 # 递归处理值
                 result[new_key] = self.capitalize_keys(value)
             return result
@@ -128,7 +130,9 @@ class TemplateRenderer:
         """
         预处理模板内容，转换 Go text/template 语法到 Jinja2
 
-        使用栈跟踪块类型，正确处理嵌套的 if/for 结构
+        处理顺序：
+        1. 先处理控制结构（if, range, end）- 这些会改变模板的结构
+        2. 再处理变量引用（移除 . 和 $ 前缀）- 这些只是简单替换
         """
         lines = content.split('\n')
         result_lines = []
@@ -137,13 +141,31 @@ class TemplateRenderer:
         for line in lines:
             processed_line = line
 
-            # 1. 处理变量引用：{{ .Var }} → {{ Var }}
-            processed_line = re.sub(r'\{\{\s*\.([\w.]+)\s*\}\}', r'{{ \1 }}', processed_line)
+            # ========== 第一阶段：处理控制结构 ==========
 
-            # 2. 处理 if 语句（各种形式）
-            # 2a. 简单 if：{{- if .Cond }}
-            if re.search(r'\{\{-?\s*if\s+\.([\w.]+)\s*\}\}', processed_line):
-                processed_line = re.sub(r'\{\{-?\s*if\s+\.([\w.]+)\s*\}\}', r'{% if \1 %}', processed_line)
+            # 1. 处理 range 循环（必须在处理变量引用之前）
+            # 1a. range 带变量：{{- range $i, $p := .Params }}
+            if re.search(r'\{\{-?\s*range\s+\$(\w+),\s*\$(\w+)\s*:=\s*\.([\w.]+)\s*\}\}', processed_line):
+                processed_line = re.sub(
+                    r'\{\{-?\s*range\s+\$(\w+),\s*\$(\w+)\s*:=\s*\.([\w.]+)\s*\}\}',
+                    r'{% for \1, \2 in enumerate(\3) %}',
+                    processed_line
+                )
+                block_stack.append('for')
+
+            # 1b. 简单 range：{{- range .Items }}
+            elif re.search(r'\{\{-?\s*range\s+\.([\w.]+)\s*\}\}', processed_line):
+                processed_line = re.sub(r'\{\{-?\s*range\s+\.([\w.]+)\s*\}\}', r'{% for item in \1 %}', processed_line)
+                block_stack.append('for')
+
+            # 2. 处理 if 语句
+            # 2a. if and eq：{{- if and .A (eq .B "v") }}
+            elif re.search(r'\{\{-?\s*if\s+and\s+\.([\w.]+)\s+\(eq\s+\.([\w.]+)\s+"([^"]+)"\)\s*\}\}', processed_line):
+                processed_line = re.sub(
+                    r'\{\{-?\s*if\s+and\s+\.([\w.]+)\s+\(eq\s+\.([\w.]+)\s+"([^"]+)"\)\s*\}\}',
+                    r'{% if \1 and \2 == "\3" %}',
+                    processed_line
+                )
                 block_stack.append('if')
 
             # 2b. if eq：{{- if eq .Var "value" }}
@@ -155,13 +177,9 @@ class TemplateRenderer:
                 )
                 block_stack.append('if')
 
-            # 2c. if and eq：{{- if and .A (eq .B "v") }}
-            elif re.search(r'\{\{-?\s*if\s+and\s+\.([\w.]+)\s+\(eq\s+\.([\w.]+)\s+"([^"]+)"\)\s*\}\}', processed_line):
-                processed_line = re.sub(
-                    r'\{\{-?\s*if\s+and\s+\.([\w.]+)\s+\(eq\s+\.([\w.]+)\s+"([^"]+)"\)\s*\}\}',
-                    r'{% if \1 and \2 == "\3" %}',
-                    processed_line
-                )
+            # 2c. 简单 if：{{- if .Cond }} 或 {{- if $var }}
+            elif re.search(r'\{\{-?\s*if\s+[\.$]+([\w.]+)\s*\}\}', processed_line):
+                processed_line = re.sub(r'\{\{-?\s*if\s+[\.$]+([\w.]+)\s*\}\}', r'{% if \1 %}', processed_line)
                 block_stack.append('if')
 
             # 2d. else if：{{- else if eq .Var "value" }}
@@ -173,22 +191,7 @@ class TemplateRenderer:
                 )
                 # else if 不改变栈（仍在同一个 if 块中）
 
-            # 3. 处理 range 循环
-            # 3a. 简单 range：{{- range .Items }}
-            elif re.search(r'\{\{-?\s*range\s+\.([\w.]+)\s*\}\}', processed_line):
-                processed_line = re.sub(r'\{\{-?\s*range\s+\.([\w.]+)\s*\}\}', r'{% for item in \1 %}', processed_line)
-                block_stack.append('for')
-
-            # 3b. range 带变量：{{- range $i, $p := .Params }}
-            elif re.search(r'\{\{-?\s*range\s+\$(\w+),\s*\$(\w+)\s*:=\s*\.([\w.]+)\s*\}\}', processed_line):
-                processed_line = re.sub(
-                    r'\{\{-?\s*range\s+\$(\w+),\s*\$(\w+)\s*:=\s*\.([\w.]+)\s*\}\}',
-                    r'{% for \1, \2 in enumerate(\3) %}',
-                    processed_line
-                )
-                block_stack.append('for')
-
-            # 4. 处理 end 标签（根据栈顶决定是 endif 还是 endfor）
+            # 3. 处理 end 标签（根据栈顶决定是 endif 还是 endfor）
             elif re.search(r'\{\{-?\s*end\s*\}\}', processed_line):
                 if block_stack:
                     block_type = block_stack.pop()
@@ -199,6 +202,20 @@ class TemplateRenderer:
                 else:
                     # 栈为空，默认 endif
                     processed_line = re.sub(r'\{\{-?\s*end\s*\}\}', r'{% endif %}', processed_line)
+
+            # ========== 第二阶段：处理变量引用 ==========
+
+            # 4. 处理根上下文引用：{{ $.Var }} → {{ Var }}
+            processed_line = re.sub(r'\{\{\s*\$\.([\w.]+)\s*\}\}', r'{{ \1 }}', processed_line)
+
+            # 5. 处理变量引用：{{ $var }} → {{ var }} (移除 $)
+            processed_line = re.sub(r'\{\{\s*\$(\w+)\s*\}\}', r'{{ \1 }}', processed_line)
+
+            # 6. 处理点号引用：{{ .Var }} → {{ Var }}
+            processed_line = re.sub(r'\{\{\s*\.([\w.]+)\s*\}\}', r'{{ \1 }}', processed_line)
+
+            # 7. 处理 {% %} 标签中的点号引用：{% if .Var %} → {% if Var %}
+            processed_line = re.sub(r'(\{%\s+\w+\s+)\.(\w+[\w.]*)', r'\1\2', processed_line)
 
             result_lines.append(processed_line)
 
@@ -253,6 +270,8 @@ class TemplateRenderer:
         # 获取 output_base（如果有）
         output_base = manifest.get('output_base', '')
         if output_base:
+            # 预处理 output_base（可能包含 Go template 语法）
+            output_base = self.preprocess_template(output_base)
             # 渲染 output_base（可能包含变量）
             output_base = Template(output_base).render(**all_variables)
 
@@ -271,8 +290,9 @@ class TemplateRenderer:
             # 构建模板文件的完整路径
             template_full_path = str(manifest_dir / template_file)
 
-            # 渲染 output 路径（可能包含变量）
-            output_path = Template(output_file).render(**all_variables)
+            # 预处理并渲染 output 路径（可能包含 Go template 语法和变量）
+            output_path = self.preprocess_template(output_file)
+            output_path = Template(output_path).render(**all_variables)
 
             # 构建完整的输出路径
             if output_base:

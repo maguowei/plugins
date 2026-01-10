@@ -6,12 +6,8 @@ require (
 {{- range .Go.Dependencies }}
 	{{ .Name }} {{ .Version }}
 {{- end }}
-{{- if eq .Database "mysql" }}
-{{- range .DatabaseConfig.GoDepencies }}
-	{{ .Name }} {{ .Version }}
-{{- end }}
-{{- else if eq .Database "sqlite" }}
-{{- range .DatabaseConfig.GoDependencies }}
+{{- if .GoDependencies }}
+{{- range .GoDependencies }}
 	{{ .Name }} {{ .Version }}
 {{- end }}
 {{- end }}
