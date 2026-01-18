@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # React + Tailwind CSS 项目生成脚本
-# 使用最新的工具链和最佳实践配置
+# 使用模板驱动的方式生成项目
 
 set -e
 
@@ -41,6 +41,7 @@ log_info "React Router: ${INCLUDE_ROUTER}"
 log_info "Zustand: ${INCLUDE_ZUSTAND}"
 log_info "Vitest: ${INCLUDE_VITEST}"
 log_info "Storybook: ${INCLUDE_STORYBOOK}"
+log_info "模板目录: ${TEMPLATE_DIR}"
 log_info "=========================================="
 
 # 验证项目名称
@@ -77,6 +78,18 @@ check_pnpm() {
         npm install -g pnpm
     fi
     log_success "pnpm $(pnpm -v) ✓"
+}
+
+# 复制模板文件的函数
+copy_template() {
+    local src="$1"
+    local dest="$2"
+    if [ -f "$src" ]; then
+        cp "$src" "$dest"
+        log_info "  ✓ $(basename "$dest")"
+    else
+        log_warning "  模板不存在: $src"
+    fi
 }
 
 # 环境检查
@@ -136,442 +149,62 @@ fi
 if [ "$INCLUDE_STORYBOOK" = "yes" ]; then
     log_info "  - 安装 Storybook..."
     pnpm dlx storybook@latest init --skip-install --yes
-    # 安装 storybook 相关依赖，包括 eslint 插件
     pnpm add -D eslint-plugin-storybook
     pnpm install
 fi
 
-# 步骤 7: 创建目录结构
+# 步骤 7: 创建目录结构并复制模板
 log_info "步骤 7/8: 创建项目目录结构..."
 mkdir -p src/{components,hooks,pages,services,stores,types,utils}
+mkdir -p .vscode
 
-# 步骤 8: 生成配置文件
-log_info "步骤 8/8: 生成配置文件..."
+log_info "步骤 8/8: 从模板复制配置文件..."
 
-# ESLint 配置 (Flat Config)
-cat > eslint.config.mjs << 'ESLINT_EOF'
-import js from '@eslint/js';
-import globals from 'globals';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
-import tseslint from 'typescript-eslint';
-import react from 'eslint-plugin-react';
-import prettier from 'eslint-plugin-prettier';
-import prettierConfig from 'eslint-config-prettier';
+# 复制配置文件
+log_info "复制配置文件..."
+copy_template "${TEMPLATE_DIR}/configs/eslint.config.mjs" "eslint.config.mjs"
+copy_template "${TEMPLATE_DIR}/configs/prettier.config.mjs" "prettier.config.mjs"
+copy_template "${TEMPLATE_DIR}/configs/stylelint.config.mjs" "stylelint.config.mjs"
+copy_template "${TEMPLATE_DIR}/configs/commitlint.config.mjs" "commitlint.config.mjs"
+copy_template "${TEMPLATE_DIR}/configs/vite.config.ts" "vite.config.ts"
+copy_template "${TEMPLATE_DIR}/configs/.prettierignore" ".prettierignore"
 
-export default tseslint.config(
-  { ignores: ['dist', 'node_modules', '*.config.*'] },
-  {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended, prettierConfig],
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      ecmaVersion: 2024,
-      globals: globals.browser,
-      parserOptions: {
-        ecmaFeatures: { jsx: true },
-      },
-    },
-    plugins: {
-      react,
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-      prettier,
-    },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      'prettier/prettier': 'error',
-    },
-    settings: {
-      react: { version: 'detect' },
-    },
-  }
-);
-ESLINT_EOF
+# 复制源代码模板
+log_info "复制源代码模板..."
+copy_template "${TEMPLATE_DIR}/src/index.css" "src/index.css"
+copy_template "${TEMPLATE_DIR}/src/App.tsx" "src/App.tsx"
+copy_template "${TEMPLATE_DIR}/src/main.tsx" "src/main.tsx"
+copy_template "${TEMPLATE_DIR}/src/hooks/useCounter.ts" "src/hooks/useCounter.ts"
+copy_template "${TEMPLATE_DIR}/src/components/Button.tsx" "src/components/Button.tsx"
+copy_template "${TEMPLATE_DIR}/src/types/index.ts" "src/types/index.ts"
+copy_template "${TEMPLATE_DIR}/src/utils/cn.ts" "src/utils/cn.ts"
 
-# Prettier 配置
-cat > prettier.config.mjs << 'PRETTIER_EOF'
-/** @type {import("prettier").Config} */
-export default {
-  printWidth: 100,
-  tabWidth: 2,
-  useTabs: false,
-  semi: true,
-  singleQuote: true,
-  quoteProps: 'as-needed',
-  jsxSingleQuote: false,
-  trailingComma: 'es5',
-  bracketSpacing: true,
-  bracketSameLine: false,
-  arrowParens: 'always',
-  endOfLine: 'lf',
-  plugins: [],
-};
-PRETTIER_EOF
+# 复制 VS Code 配置
+log_info "复制 VS Code 配置..."
+copy_template "${TEMPLATE_DIR}/vscode/settings.json" ".vscode/settings.json"
+copy_template "${TEMPLATE_DIR}/vscode/extensions.json" ".vscode/extensions.json"
 
-# Stylelint 配置
-cat > stylelint.config.mjs << 'STYLELINT_EOF'
-/** @type {import('stylelint').Config} */
-export default {
-  extends: ['stylelint-config-standard'],
-  rules: {
-    'at-rule-no-unknown': [
-      true,
-      {
-        ignoreAtRules: ['tailwind', 'apply', 'variants', 'responsive', 'screen', 'layer', 'theme', 'custom-variant'],
-      },
-    ],
-    'selector-class-pattern': null,
-    'no-descending-specificity': null,
-    'function-no-unknown': [
-      true,
-      {
-        ignoreFunctions: ['theme'],
-      },
-    ],
-  },
-};
-STYLELINT_EOF
-
-# Commitlint 配置
-cat > commitlint.config.mjs << 'COMMITLINT_EOF'
-export default {
-  extends: ['@commitlint/config-conventional'],
-  rules: {
-    'type-enum': [
-      2,
-      'always',
-      [
-        'feat',     // 新功能
-        'fix',      // 修复 bug
-        'docs',     // 文档变更
-        'style',    // 代码格式 (不影响功能)
-        'refactor', // 重构 (既不是新功能也不是 bug 修复)
-        'perf',     // 性能优化
-        'test',     // 添加/修改测试
-        'chore',    // 构建过程或辅助工具变动
-        'revert',   // 回滚
-        'ci',       // CI 配置变更
-        'build',    // 构建系统变更
-      ],
-    ],
-    'subject-case': [0],
-  },
-};
-COMMITLINT_EOF
-
-# 更新 Vite 配置
-cat > vite.config.ts << 'VITE_EOF'
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc';
-import tailwindcss from '@tailwindcss/vite';
-
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      '@': '/src',
-    },
-  },
-  server: {
-    port: 5173,
-    open: true,
-  },
-  build: {
-    target: 'esnext',
-    sourcemap: true,
-  },
-});
-VITE_EOF
-
-# 更新 index.css (Tailwind v4 CSS-first)
-cat > src/index.css << 'CSS_EOF'
-@import "tailwindcss";
-
-/* Tailwind CSS v4 - CSS-first 配置 */
-@theme {
-  /* 自定义颜色 */
-  --color-primary: #3b82f6;
-  --color-primary-dark: #2563eb;
-  --color-secondary: #6b7280;
-
-  /* 自定义字体 */
-  --font-family-sans: 'Inter', system-ui, sans-serif;
-
-  /* 自定义间距 */
-  --spacing-18: 4.5rem;
-}
-
-/* 自定义工具类 */
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-CSS_EOF
-
-# 更新 App.tsx
-cat > src/App.tsx << 'APP_EOF'
-import { useState } from 'react';
-
-function App() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-5xl font-bold text-white mb-8">
-          React + Tailwind CSS
-        </h1>
-        <p className="text-gray-400 mb-8 text-lg">
-          Vite + SWC + TypeScript + Tailwind CSS v4
-        </p>
-        <div className="bg-gray-800 rounded-xl p-8 shadow-2xl">
-          <button
-            onClick={() => setCount((c) => c + 1)}
-            className="bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 text-lg"
-          >
-            Count: {count}
-          </button>
-        </div>
-        <p className="text-gray-500 mt-8 text-sm">
-          Edit <code className="text-primary">src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-    </div>
-  );
-}
-
-export default App;
-APP_EOF
-
-# 更新 main.tsx
-cat > src/main.tsx << 'MAIN_EOF'
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import App from './App';
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
-MAIN_EOF
-
-# 创建示例文件
-# 示例 Hook
-cat > src/hooks/useCounter.ts << 'HOOK_EOF'
-import { useState, useCallback } from 'react';
-
-interface UseCounterOptions {
-  initialValue?: number;
-  min?: number;
-  max?: number;
-  step?: number;
-}
-
-export function useCounter(options: UseCounterOptions = {}) {
-  const { initialValue = 0, min = -Infinity, max = Infinity, step = 1 } = options;
-
-  const [count, setCount] = useState(initialValue);
-
-  const increment = useCallback(() => {
-    setCount((c) => Math.min(c + step, max));
-  }, [step, max]);
-
-  const decrement = useCallback(() => {
-    setCount((c) => Math.max(c - step, min));
-  }, [step, min]);
-
-  const reset = useCallback(() => {
-    setCount(initialValue);
-  }, [initialValue]);
-
-  const set = useCallback(
-    (value: number) => {
-      setCount(Math.min(Math.max(value, min), max));
-    },
-    [min, max]
-  );
-
-  return { count, increment, decrement, reset, set };
-}
-HOOK_EOF
-
-# 示例组件
-cat > src/components/Button.tsx << 'BUTTON_EOF'
-import { ButtonHTMLAttributes, forwardRef } from 'react';
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
-}
-
-const variantStyles = {
-  primary: 'bg-primary hover:bg-primary-dark text-white',
-  secondary: 'bg-secondary hover:bg-gray-600 text-white',
-  outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white',
-};
-
-const sizeStyles = {
-  sm: 'py-1.5 px-3 text-sm',
-  md: 'py-2 px-4 text-base',
-  lg: 'py-3 px-6 text-lg',
-};
-
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', className = '', children, ...props }, ref) => {
-    return (
-      <button
-        ref={ref}
-        className={`font-semibold rounded-lg transition-colors duration-200 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-);
-
-Button.displayName = 'Button';
-BUTTON_EOF
-
-# 示例类型
-cat > src/types/index.ts << 'TYPES_EOF'
-// 通用类型定义
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface ApiResponse<T> {
-  data: T;
-  message: string;
-  success: boolean;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-TYPES_EOF
-
-# 示例工具函数
-cat > src/utils/cn.ts << 'CN_EOF'
-/**
- * 合并 className 的工具函数
- * 简化版的 clsx/classnames
- */
-export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
-}
-CN_EOF
-
-# Zustand store 示例 (如果启用)
+# 条件复制: Zustand store
 if [ "$INCLUDE_ZUSTAND" = "yes" ]; then
-cat > src/stores/counterStore.ts << 'STORE_EOF'
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-
-interface CounterState {
-  count: number;
-  increment: () => void;
-  decrement: () => void;
-  reset: () => void;
-  setCount: (value: number) => void;
-}
-
-export const useCounterStore = create<CounterState>()(
-  devtools(
-    persist(
-      (set) => ({
-        count: 0,
-        increment: () => set((state) => ({ count: state.count + 1 })),
-        decrement: () => set((state) => ({ count: state.count - 1 })),
-        reset: () => set({ count: 0 }),
-        setCount: (value) => set({ count: value }),
-      }),
-      { name: 'counter-storage' }
-    ),
-    { name: 'CounterStore' }
-  )
-);
-STORE_EOF
+    log_info "复制 Zustand store 模板..."
+    copy_template "${TEMPLATE_DIR}/src/stores/counterStore.ts" "src/stores/counterStore.ts"
 fi
 
-# Vitest 配置 (如果启用)
+# 条件复制: Vitest 配置
 if [ "$INCLUDE_VITEST" = "yes" ]; then
-cat > vitest.config.ts << 'VITEST_EOF'
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react-swc';
-
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.{test,spec}.{js,jsx,ts,tsx}'],
-    coverage: {
-      reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'src/test/'],
-    },
-  },
-  resolve: {
-    alias: {
-      '@': '/src',
-    },
-  },
-});
-VITEST_EOF
-
-mkdir -p src/test
-cat > src/test/setup.ts << 'SETUP_EOF'
-import '@testing-library/jest-dom';
-SETUP_EOF
-
-cat > src/components/Button.test.tsx << 'TEST_EOF'
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { Button } from './Button';
-
-describe('Button', () => {
-  it('renders children correctly', () => {
-    render(<Button>Click me</Button>);
-    expect(screen.getByText('Click me')).toBeInTheDocument();
-  });
-
-  it('calls onClick when clicked', () => {
-    const handleClick = vi.fn();
-    render(<Button onClick={handleClick}>Click me</Button>);
-    fireEvent.click(screen.getByText('Click me'));
-    expect(handleClick).toHaveBeenCalledTimes(1);
-  });
-
-  it('applies variant styles correctly', () => {
-    render(<Button variant="secondary">Secondary</Button>);
-    const button = screen.getByText('Secondary');
-    expect(button.className).toContain('bg-secondary');
-  });
-});
-TEST_EOF
+    log_info "复制 Vitest 配置..."
+    mkdir -p src/test
+    copy_template "${TEMPLATE_DIR}/configs/vitest.config.ts" "vitest.config.ts"
+    copy_template "${TEMPLATE_DIR}/src/test/setup.ts" "src/test/setup.ts"
+    copy_template "${TEMPLATE_DIR}/src/components/Button.test.tsx" "src/components/Button.test.tsx"
 fi
+
+# 追加 .gitignore 内容
+log_info "更新 .gitignore..."
+cat "${TEMPLATE_DIR}/configs/.gitignore.append" >> .gitignore
 
 # 更新 package.json scripts
+log_info "更新 package.json scripts..."
 node << NODEJS_EOF
 const fs = require('fs');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
@@ -618,74 +251,14 @@ log_info "初始化 Husky..."
 git init
 pnpm exec husky init
 
-# 创建 pre-commit hook
-cat > .husky/pre-commit << 'PRECOMMIT_EOF'
-pnpm exec lint-staged
-PRECOMMIT_EOF
-
-# 创建 commit-msg hook
-cat > .husky/commit-msg << 'COMMITMSG_EOF'
-pnpm exec commitlint --edit $1
-COMMITMSG_EOF
+# 复制 Husky hooks
+log_info "配置 Git Hooks..."
+copy_template "${TEMPLATE_DIR}/husky/pre-commit" ".husky/pre-commit"
+copy_template "${TEMPLATE_DIR}/husky/commit-msg" ".husky/commit-msg"
 
 # 设置执行权限
 chmod +x .husky/pre-commit
 chmod +x .husky/commit-msg
-
-# 创建 .prettierignore
-cat > .prettierignore << 'IGNORE_EOF'
-dist
-node_modules
-.husky
-pnpm-lock.yaml
-*.min.js
-*.min.css
-IGNORE_EOF
-
-# 创建 .gitignore 补充
-cat >> .gitignore << 'GITIGNORE_EOF'
-
-# IDE
-.idea
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-
-# Testing
-coverage
-
-# Storybook
-storybook-static
-GITIGNORE_EOF
-
-# 创建 VS Code 配置
-mkdir -p .vscode
-cat > .vscode/settings.json << 'VSCODE_EOF'
-{
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.fixAll.stylelint": "explicit"
-  },
-  "eslint.useFlatConfig": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "css.validate": false,
-  "stylelint.validate": ["css"]
-}
-VSCODE_EOF
-
-cat > .vscode/extensions.json << 'EXT_EOF'
-{
-  "recommendations": [
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "stylelint.vscode-stylelint",
-    "bradlc.vscode-tailwindcss",
-    "dsznajder.es7-react-js-snippets"
-  ]
-}
-EXT_EOF
 
 log_success "=========================================="
 log_success "项目 '${PROJECT_NAME}' 创建成功!"

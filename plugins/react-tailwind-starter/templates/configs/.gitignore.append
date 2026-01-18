@@ -1,0 +1,12 @@
+
+# IDE
+.idea
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Testing
+coverage
+
+# Storybook
+storybook-static

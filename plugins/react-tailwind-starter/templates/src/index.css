@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* Tailwind CSS v4 - CSS-first 配置 */
+@theme {
+  /* 自定义颜色 */
+  --color-primary: #3b82f6;
+  --color-primary-dark: #2563eb;
+  --color-secondary: #6b7280;
+
+  /* 自定义字体 */
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+
+  /* 自定义间距 */
+  --spacing-18: 4.5rem;
+}
+
+/* 自定义工具类 */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
