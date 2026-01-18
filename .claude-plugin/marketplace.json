@@ -32,6 +32,28 @@
         "clean-architecture"
       ],
       "license": "MIT"
+    },
+    {
+      "name": "react-tailwind-starter",
+      "version": "0.1.0",
+      "description": "React + Tailwind CSS 脚手架生成器 - 基于 Vite + SWC + TypeScript，集成 ESLint v9、Prettier、Stylelint、Husky、Commitlint 等最佳实践配置",
+      "source": "./plugins/react-tailwind-starter",
+      "author": {
+        "name": "Maguowei",
+        "email": "imaguowei@gmail.com"
+      },
+      "keywords": [
+        "react",
+        "tailwind",
+        "vite",
+        "typescript",
+        "eslint",
+        "prettier",
+        "husky",
+        "scaffold",
+        "starter"
+      ],
+      "license": "MIT"
     }
   ]
 }
