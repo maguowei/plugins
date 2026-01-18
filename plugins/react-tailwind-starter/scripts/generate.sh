@@ -136,6 +136,8 @@ fi
 if [ "$INCLUDE_STORYBOOK" = "yes" ]; then
     log_info "  - 安装 Storybook..."
     pnpm dlx storybook@latest init --skip-install --yes
+    # 安装 storybook 相关依赖，包括 eslint 插件
+    pnpm add -D eslint-plugin-storybook
     pnpm install
 fi
 
@@ -570,12 +572,14 @@ TEST_EOF
 fi
 
 # 更新 package.json scripts
-node -e "
+node << NODEJS_EOF
 const fs = require('fs');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
+const includeVitest = '${INCLUDE_VITEST}' === 'yes';
+const includeStorybook = '${INCLUDE_STORYBOOK}' === 'yes';
+
 pkg.scripts = {
-  ...pkg.scripts,
   'dev': 'vite',
   'build': 'tsc -b && vite build',
   'preview': 'vite preview',
@@ -583,16 +587,22 @@ pkg.scripts = {
   'lint:fix': 'eslint . --fix',
   'format': 'prettier --write .',
   'format:check': 'prettier --check .',
-  'stylelint': 'stylelint \"src/**/*.css\"',
-  'stylelint:fix': 'stylelint \"src/**/*.css\" --fix',
+  'stylelint': 'stylelint "src/**/*.css"',
+  'stylelint:fix': 'stylelint "src/**/*.css" --fix',
   'prepare': 'husky',
-  $([ '$INCLUDE_VITEST' = 'yes' ] && echo '\"test\": \"vitest\",')
-  $([ '$INCLUDE_VITEST' = 'yes' ] && echo '\"test:ui\": \"vitest --ui\",')
-  $([ '$INCLUDE_VITEST' = 'yes' ] && echo '\"test:coverage\": \"vitest --coverage\",')
-  $([ '$INCLUDE_STORYBOOK' = 'yes' ] && echo '\"storybook\": \"storybook dev -p 6006\",')
-  $([ '$INCLUDE_STORYBOOK' = 'yes' ] && echo '\"build-storybook\": \"storybook build\",')
   'typecheck': 'tsc --noEmit'
 };
+
+if (includeVitest) {
+  pkg.scripts['test'] = 'vitest';
+  pkg.scripts['test:ui'] = 'vitest --ui';
+  pkg.scripts['test:coverage'] = 'vitest --coverage';
+}
+
+if (includeStorybook) {
+  pkg.scripts['storybook'] = 'storybook dev -p 6006';
+  pkg.scripts['build-storybook'] = 'storybook build';
+}
 
 pkg['lint-staged'] = {
   '*.{js,jsx,ts,tsx}': ['eslint --fix', 'prettier --write'],
@@ -601,7 +611,7 @@ pkg['lint-staged'] = {
 };
 
 fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
-"
+NODEJS_EOF
 
 # 初始化 Husky
 log_info "初始化 Husky..."
