@@ -5,55 +5,69 @@
     "email": "imaguowei@gmail.com"
   },
   "metadata": {
-    "description": "Claude Code 插件集合",
+    "description": "Claude Code 插件集合 - 提供 Go DDD 和 React 项目脚手架生成器",
     "version": "1.0.0",
-    "homepage": "https://github.com/maguowei/claude-code-plugin",
-    "repository": "https://github.com/maguowei/claude-code-plugin",
-    "license": "MIT"
+    "pluginRoot": "./plugins"
   },
   "plugins": [
     {
       "name": "go-ddd-scaffold",
-      "version": "0.1.0",
-      "description": "Go Web 项目脚手架生成器 - 基于 DDD 架构、Go 标准布局、Gin+Ent 技术栈的一键项目初始化工具",
       "source": "./plugins/go-ddd-scaffold",
+      "description": "Go Web 项目脚手架生成器 - 基于 DDD 四层架构、golang-standards/project-layout 标准布局、Gin+Ent+Viper+slog 技术栈的一键项目初始化工具",
+      "version": "0.1.0",
       "author": {
-        "name": "Maguowei",
+        "name": "maguowei",
         "email": "imaguowei@gmail.com"
       },
+      "homepage": "https://github.com/maguowei/claude-code-plugins/tree/main/plugins/go-ddd-scaffold",
+      "repository": "https://github.com/maguowei/claude-code-plugins",
+      "license": "MIT",
+      "category": "scaffold",
       "keywords": [
         "go",
         "ddd",
         "scaffold",
+        "generator",
         "gin",
         "ent",
+        "viper",
+        "slog",
         "web",
-        "generator",
-        "clean-architecture"
-      ],
-      "license": "MIT"
+        "clean-architecture",
+        "domain-driven-design",
+        "project-layout"
+      ]
     },
     {
       "name": "react-tailwind-starter",
-      "version": "0.1.0",
-      "description": "React + Tailwind CSS 脚手架生成器 - 基于 Vite + SWC + TypeScript，集成 ESLint v9、Prettier、Stylelint、Husky、Commitlint 等最佳实践配置",
       "source": "./plugins/react-tailwind-starter",
+      "description": "React + Tailwind CSS 脚手架生成器 - 基于 Vite + SWC + TypeScript，集成 ESLint v9 flat config、Prettier、Stylelint、Husky、Commitlint 等现代前端最佳实践配置",
+      "version": "0.1.0",
       "author": {
-        "name": "Maguowei",
+        "name": "maguowei",
         "email": "imaguowei@gmail.com"
       },
+      "homepage": "https://github.com/maguowei/claude-code-plugins/tree/main/plugins/react-tailwind-starter",
+      "repository": "https://github.com/maguowei/claude-code-plugins",
+      "license": "MIT",
+      "category": "scaffold",
       "keywords": [
         "react",
         "tailwind",
+        "tailwindcss",
         "vite",
+        "swc",
         "typescript",
         "eslint",
         "prettier",
+        "stylelint",
         "husky",
+        "commitlint",
         "scaffold",
-        "starter"
-      ],
-      "license": "MIT"
+        "starter",
+        "frontend",
+        "best-practices"
+      ]
     }
   ]
 }
