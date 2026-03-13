@@ -55,9 +55,9 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/generate.sh \
 - `${CLAUDE_PLUGIN_ROOT}` 会自动展开为插件根目录
 
 脚本将自动完成:
-- 验证环境（Go、Python3、依赖）
+- 验证环境 (Go、Python3、依赖)
 - 创建完整目录结构
-- 生成所有四层代码（45+ 个文件）
+- 生成所有四层代码 (45+ 个文件)
 - 配置 Docker 和 docker-compose
 - 初始化 Go modules
 - 安装依赖
@@ -70,8 +70,6 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/generate.sh \
 项目生成完成后,向用户显示以下信息:
 
 ```
-✅ Go DDD 项目创建成功!
-
 项目位置: ./<project-name>/
 
 后续步骤:
@@ -99,43 +97,6 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/generate.sh \
 
 7. 运行测试:
    go test ./...
-
-8. 代码检查:
-   golangci-lint run
-
-项目包含:
-✅ DDD 四层架构 (Domain, Application, Infrastructure, Interface)
-✅ User CRUD 完整实现 (Entity, Value Object, Repository, Service, Handler)
-✅ Gin Web 框架配置
-✅ Ent ORM + MySQL/SQLite
-✅ Viper 配置管理
-✅ slog 结构化日志
-✅ Prometheus 监控
-✅ Sentry 错误追踪
-✅ Docker + docker-compose
-✅ OpenAPI 3.1 规范
-✅ 单元测试 + 集成测试
-✅ 完整文档
-
-开始开发吧! 🚀
-```
-
-## 使用示例
-
-### 交互式使用
-
-```
-用户: /init-go-web
-
-系统询问:
-1. 项目名称: my-service
-2. Go module 路径: github.com/myorg/my-service
-3. 数据库类型: mysql
-4. 包含示例: yes
-
-[脚本自动生成项目]
-
-系统显示: ✅ 项目创建成功! [后续步骤]
 ```
 
 ## 错误处理
@@ -153,34 +114,10 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/generate.sh \
 
 运行此命令前,请确保已安装:
 
-1. **Go 1.21+**
-   ```bash
-   # macOS
-   brew install go
-
-   # 验证
-   go version
-   ```
-
-2. **Python 3.8+**
-   ```bash
-   # macOS
-   brew install python3
-
-   # 验证
-   python3 --version
-   ```
-
-3. **Python 依赖**
-   ```bash
-   pip3 install jinja2 pyyaml
-   ```
-
-4. **Docker** (可选,用于运行数据库)
-   ```bash
-   # macOS
-   brew install --cask docker
-   ```
+1. **Go 1.21+**: `brew install go`
+2. **Python 3.8+**: `brew install python3`
+3. **Python 依赖**: `pip3 install jinja2 pyyaml`
+4. **Docker** (可选): `brew install --cask docker`
 
 ## 注意事项
 
@@ -190,9 +127,9 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/generate.sh \
 - 不要覆盖现有目录
 - 脚本会自动验证环境并提供清晰的错误提示
 
-## 相关文档
+## 相关 Skills
 
-此命令生成的项目包含以下文档:
+生成的项目涉及以下知识点:
 - DDD 核心概念 (参考 ddd-core-concepts skill)
 - DDD 四层架构 (参考 ddd-layered-architecture skill)
 - Go 项目结构 (参考 go-project-structure skill)
