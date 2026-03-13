@@ -1,21 +1,26 @@
 {
   "name": "react-tailwind-starter",
   "version": "0.1.0",
-  "description": "React + Tailwind CSS 脚手架生成器 - 基于 Vite + SWC + TypeScript，集成 ESLint v9、Prettier、Stylelint、Husky、Commitlint 等最佳实践配置",
+  "description": "React + Tailwind CSS 脚手架生成器 - 基于 Vite + SWC + TypeScript，集成 ESLint v9 flat config、Prettier、Stylelint、Husky、Commitlint 等现代前端最佳实践配置",
   "author": {
-    "name": "Maguowei",
+    "name": "maguowei",
     "email": "imaguowei@gmail.com"
   },
   "keywords": [
     "react",
     "tailwind",
+    "tailwindcss",
     "vite",
+    "swc",
     "typescript",
     "eslint",
     "prettier",
+    "stylelint",
     "husky",
+    "commitlint",
     "scaffold",
-    "starter"
+    "starter",
+    "frontend"
   ],
   "license": "MIT"
 }

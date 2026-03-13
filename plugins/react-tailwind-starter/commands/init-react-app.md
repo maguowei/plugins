@@ -1,6 +1,6 @@
 ---
 name: init-react-app
-description: 初始化一个新的 React + Tailwind CSS 项目，使用 Vite + SWC + TypeScript，集成 ESLint v9、Prettier、Husky 等最佳实践配置
+description: 初始化一个新的 React + Tailwind CSS 项目，使用 Vite + SWC + TypeScript，集成 ESLint v9 flat config、Prettier、Stylelint、Husky、Commitlint 等现代前端最佳实践配置
 argument-hint: "[--name <project-name>]"
 allowed-tools:
   - Bash
