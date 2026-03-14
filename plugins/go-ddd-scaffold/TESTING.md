@@ -14,7 +14,7 @@
 
 ```bash
 # 从插件市场目录启动 Claude Code
-cd /Users/maguowei/Work/AI/my-claude-code-plugin
+cd /path/to/claude-code-plugins
 cc --plugin-dir ./plugins/go-ddd-scaffold
 ```
 
