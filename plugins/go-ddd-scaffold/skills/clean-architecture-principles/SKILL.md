@@ -200,19 +200,19 @@ func (s *SMTPEmailSender) Send(to, subject, body string) error {
 每层有独立的数据结构:
 
 ```go
-// Interface Layer DTO
+// 接口层 DTO
 type CreateUserRequest struct {
     Email string `json:"email"`
     Name  string `json:"name"`
 }
 
-// Application Layer DTO
+// 应用层 DTO
 type CreateUserCommand struct {
     Email string
     Name  string
 }
 
-// Domain Entity
+// 领域实体
 type User struct {
     id    uuid.UUID
     email Email

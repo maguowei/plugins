@@ -28,6 +28,7 @@ version: 0.2.0
 package entity
 
 import (
+    "errors"
     "time"
     "github.com/google/uuid"
     "myproject/internal/app/domain/user/valueobject"
@@ -96,14 +97,19 @@ func (u *User) Equals(other *User) bool {
 // internal/app/domain/user/valueobject/email.go
 package valueobject
 
+import (
+    "errors"
+    "strings"
+)
+
 // Email 值对象 (不可变)
 type Email struct {
     value string
 }
 
 // 构造函数: 唯一创建方式，强制验证
-func NewEmail(email string) (Email, error) {
-    email = strings.TrimSpace(strings.ToLower(email))
+func NewEmail(raw string) (Email, error) {
+    email := strings.TrimSpace(strings.ToLower(raw))
     if email == "" {
         return Email{}, errors.New("email cannot be empty")
     }

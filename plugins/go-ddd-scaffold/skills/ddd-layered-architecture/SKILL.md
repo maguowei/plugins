@@ -256,10 +256,10 @@ HTTP Response ← Interface (Handler) ← Application (DTO 转换)
 ```go
 // main.go
 func InitializeUserHandler(db *ent.Client) *handler.UserHandler {
-    userRepo := repository.NewEntUserRepository(db)               // Infrastructure
-    domainService := service.NewUserAuthenticationService(userRepo) // Domain
-    appService := application.NewUserApplicationService(userRepo, domainService) // Application
-    return handler.NewUserHandler(appService)                      // Interface
+    userRepo := repository.NewEntUserRepository(db)               // 基础设施层
+    domainService := service.NewUserAuthenticationService(userRepo) // 领域层
+    appService := application.NewUserApplicationService(userRepo, domainService) // 应用层
+    return handler.NewUserHandler(appService)                      // 接口层
 }
 ```
 

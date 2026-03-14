@@ -152,7 +152,7 @@ func (s *UserApplicationService) CreateUser(ctx context.Context, req CreateUserR
     // 发布领域事件 (失败不阻止主流程)
     evt := event.NewUserCreated(user.ID(), user.Email().Value(), user.Name())
     if err := s.eventBus.Publish(evt.ToCloudEvent()); err != nil {
-        log.Error("failed to publish event", "error", err)
+        slog.Error("failed to publish event", "error", err)
     }
 
     return ToUserResponse(user), nil

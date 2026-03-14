@@ -100,7 +100,7 @@ cc
 2. 询问 Go module 路径
 3. 询问数据库类型
 4. 询问是否包含示例
-5. 调用 Agent 生成项目
+5. 调用生成脚本创建项目
 ```
 
 #### 测试参数模式 (如果支持)
@@ -108,23 +108,19 @@ cc
 ```
 用户: /init-go-web --name test-service --db mysql --module github.com/test/test-service
 
-预期: 直接调用 Agent,不询问参数
+预期: 直接调用生成脚本,不询问参数
 ```
 
-### ✅ Phase 3: Agent 测试
+### ✅ Phase 3: 项目生成测试
 
-测试 `go-ddd-scaffold-generator` Agent 是否能成功生成项目。
+测试 `/init-go-web` 命令通过生成脚本能否成功生成项目。
 
 #### 基础项目生成测试
 
 ```
-用户: 请生成一个 Go DDD 项目:
-- 项目名称: test-project
-- Go Module: github.com/test/test-project
-- 数据库: mysql
-- 包含示例: yes
+用户: /init-go-web test-project
 
-预期 Agent 行为:
+预期脚本行为:
 1. 创建项目目录结构
 2. 生成所有四层代码
 3. 创建配置文件
@@ -289,14 +285,14 @@ docker-compose down -v
 2. 验证 frontmatter 中的 `name` 字段
 3. 重启 Claude Code
 
-### 问题 3: Agent 未触发
+### 问题 3: 生成脚本执行失败
 
-**症状**: 命令执行后 Agent 没有启动
+**症状**: 命令执行后项目未生成
 
 **排查**:
-1. 检查 Agent 的 description 中的示例
-2. 验证触发条件是否匹配
-3. 检查 Agent 的 `name` 字段是否正确
+1. 检查 `scripts/generate.sh` 是否存在且有执行权限
+2. 验证传入的参数是否正确
+3. 检查脚本输出的错误信息
 
 ### 问题 4: 生成的项目无法构建
 
@@ -323,7 +319,7 @@ docker-compose down -v
 
 - ✅ 所有 6 个 Skills 正确加载
 - ✅ `/init-go-web` 命令可用
-- ✅ Agent 能够生成完整项目
+- ✅ 生成脚本能够生成完整项目
 - ✅ 生成的项目可以构建成功
 - ✅ 生成的服务器可以运行
 - ✅ API 端点正常工作
@@ -383,7 +379,7 @@ docker-compose down -v
 - [ ] 交互式流程
 - [ ] 参数传递
 
-## Agent 测试
+## 项目生成测试
 - [ ] 项目生成成功
 - [ ] 目录结构正确
 - [ ] 代码可构建

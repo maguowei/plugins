@@ -71,19 +71,19 @@ export default tseslint.config(
       prettier,
     },
     rules: {
-      // React Hooks
+      // React Hooks 规则
       ...reactHooks.configs.recommended.rules,
 
-      // React Refresh (HMR)
+      // React Refresh（热更新）
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
 
-      // React
+      // React 规则
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react/jsx-no-target-blank': 'error',
       'react/jsx-curly-brace-presence': ['warn', { props: 'never', children: 'never' }],
 
-      // TypeScript
+      // TypeScript 规则
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/consistent-type-imports': ['warn', { prefer: 'type-imports' }],

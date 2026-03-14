@@ -107,8 +107,6 @@ claude-code-plugin/
 │       ├── TESTING.md            # 测试说明
 │       ├── commands/             # Slash Commands
 │       │   └── init-go-web.md
-│       ├── agents/               # Agents
-│       │   └── go-ddd-scaffold-generator.md
 │       └── skills/               # Skills
 │           ├── ddd-core-concepts/
 │           ├── ddd-layered-architecture/
