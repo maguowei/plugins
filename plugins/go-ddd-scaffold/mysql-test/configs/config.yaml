@@ -1,0 +1,21 @@
+server:
+  port: 8080
+  mode: debug
+
+database:
+  driver: mysql
+  dsn: "root:password@tcp(127.0.0.1:3306)/mysql-test?parseTime=true"
+  max_open_conns: 25
+  max_idle_conns: 5
+
+logging:
+  level: info
+  format: json
+
+sentry:
+  dsn: ""
+  environment: development
+
+prometheus:
+  enabled: true
+  path: /metrics

@@ -98,6 +98,13 @@ if [ "$INCLUDE_EXAMPLES" = "yes" ]; then
     go mod tidy
     echo -e "${GREEN}Ent 代码生成完成${NC}"
 else
+    # 无示例模式：删除引用了 user/handler 的文件（scaffold 已跳过 user 文件，
+    # 但 router.go 等仍引用了空的 handler 包）
+    rm -f internal/app/interface/http/router.go
+    rm -rf internal/app/interface/http/handler
+    rm -rf internal/app/interface/http/dto
+    rm -rf internal/ent/schema
+    rm -f internal/ent/generate.go
     go mod tidy
     echo "跳过 Ent（无示例）"
 fi

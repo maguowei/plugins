@@ -5,27 +5,22 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-{{- if not .include_examples}}
-	"net/http"
-{{- end}}
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/gin-gonic/gin"
-{{- if .include_examples}}
-	"{{.go_module}}/internal/app/application/service"
-	domainservice "{{.go_module}}/internal/app/domain/service"
-	infraevent "{{.go_module}}/internal/app/infrastructure/event"
-	infrarepo "{{.go_module}}/internal/app/infrastructure/repository"
-	apphttp "{{.go_module}}/internal/app/interface/http"
-	"{{.go_module}}/internal/app/interface/http/handler"
-	"{{.go_module}}/internal/ent"
-{{- end}}
-	"{{.go_module}}/internal/app/infrastructure/config"
-	"{{.go_module}}/internal/app/infrastructure/observability"
+	"github.com/test/mysql-test/internal/app/application/service"
+	domainservice "github.com/test/mysql-test/internal/app/domain/service"
+	infraevent "github.com/test/mysql-test/internal/app/infrastructure/event"
+	infrarepo "github.com/test/mysql-test/internal/app/infrastructure/repository"
+	apphttp "github.com/test/mysql-test/internal/app/interface/http"
+	"github.com/test/mysql-test/internal/app/interface/http/handler"
+	"github.com/test/mysql-test/internal/ent"
+	"github.com/test/mysql-test/internal/app/infrastructure/config"
+	"github.com/test/mysql-test/internal/app/infrastructure/observability"
 
-	{{if eq .database "mysql"}}_ "github.com/go-sql-driver/mysql"{{else}}_ "github.com/mattn/go-sqlite3"{{end}}
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -43,8 +38,6 @@ func main() {
 		slog.Warn("Sentry 初始化失败", "error", err)
 	}
 	defer observability.FlushSentry()
-
-{{- if .include_examples}}
 
 	// 初始化数据库
 	client, err := ent.Open(cfg.Database.Driver, cfg.Database.DSN)
@@ -67,20 +60,6 @@ func main() {
 
 	// 创建路由
 	router := apphttp.NewRouter(userHandler, cfg.Prometheus.Path)
-{{- else}}
-
-	// 设置 Gin 模式
-	if cfg.Server.Mode == "release" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
-	// 创建路由（添加你的 handler 后替换此处）
-	router := gin.New()
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "ok"})
-	})
-	router.GET(cfg.Prometheus.Path, observability.MetricsHandler())
-{{- end}}
 
 	// 启动服务
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)

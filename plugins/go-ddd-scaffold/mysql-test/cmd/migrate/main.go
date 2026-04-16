@@ -1,15 +1,13 @@
 package main
 
-{{- if .include_examples}}
-
 import (
 	"context"
 	"log"
 
-	"{{.go_module}}/internal/app/infrastructure/config"
-	"{{.go_module}}/internal/ent"
+	"github.com/test/mysql-test/internal/app/infrastructure/config"
+	"github.com/test/mysql-test/internal/ent"
 
-	{{if eq .database "mysql"}}_ "github.com/go-sql-driver/mysql"{{else}}_ "github.com/mattn/go-sqlite3"{{end}}
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -30,13 +28,3 @@ func main() {
 	}
 	log.Println("数据库迁移完成")
 }
-{{- else}}
-
-import (
-	"log"
-)
-
-func main() {
-	log.Println("数据库迁移工具 - 请在添加 Ent schema 后使用")
-}
-{{- end}}
