@@ -13,3 +13,6 @@
 # Temporary files
 *.tmp
 *.bak
+
+# 生成的测试项目
+test-project/
