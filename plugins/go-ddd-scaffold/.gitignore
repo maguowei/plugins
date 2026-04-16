@@ -16,3 +16,6 @@
 
 # 生成的测试项目
 test-project/
+mysql-test/
+sqlite-test/
+skeleton-test/
