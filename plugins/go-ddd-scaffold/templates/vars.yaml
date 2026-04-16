@@ -1,0 +1,11 @@
+# 项目级变量（generate.sh 从用户输入生成）
+project_name: "my-service"
+go_module: "github.com/example/my-service"
+database: "mysql"
+include_examples: true
+go_version: "1.24"
+
+# 示例聚合级变量（固定值）
+entity_name: "User"
+entity_name_lower: "user"
+entity_id_type: "uuid.UUID"
