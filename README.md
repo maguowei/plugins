@@ -1,4 +1,4 @@
-# Claude Code Plugin Marketplace
+# Claude Plugins Marketplace
 
 ## 插件
 
