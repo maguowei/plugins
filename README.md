@@ -20,7 +20,7 @@
 非 Claude Code 工具可通过 skills CLI 将仓库中的 skill 安装到全局：
 
 ```bash
-skills add -g git@github.com:maguowei/plugins.git
+skills add -g maguowei/plugins
 ```
 
 ### 本地开发
