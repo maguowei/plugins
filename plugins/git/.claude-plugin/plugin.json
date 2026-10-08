@@ -1,0 +1,11 @@
+{
+  "name": "git",
+  "version": "0.2.0",
+  "description": "git 工作流 skill 集合：按 Conventional Commits 规范提交（type 英文、描述中文）、安全推送",
+  "author": {
+    "name": "maguowei",
+    "email": "imaguowei@gmail.com"
+  },
+  "keywords": ["git", "commit", "push", "conventional-commits"],
+  "license": "MIT"
+}

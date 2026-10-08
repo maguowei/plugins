@@ -1,0 +1,34 @@
+{
+  "name": "maguowei-plugins",
+  "owner": {
+    "name": "maguowei",
+    "email": "imaguowei@gmail.com"
+  },
+  "metadata": {
+    "description": "Claude Code 插件集合 - 提供 git 工作流 skill",
+    "version": "1.0.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "git",
+      "source": "./plugins/git",
+      "description": "git 工作流 skill 集合：按 Conventional Commits 规范提交（type 英文、描述中文）、安全推送",
+      "version": "0.2.0",
+      "author": {
+        "name": "maguowei",
+        "email": "imaguowei@gmail.com"
+      },
+      "homepage": "https://github.com/maguowei/plugins/tree/main/plugins/git",
+      "repository": "https://github.com/maguowei/plugins",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "git",
+        "commit",
+        "push",
+        "conventional-commits"
+      ]
+    }
+  ]
+}

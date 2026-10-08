@@ -1,0 +1,4 @@
+# Local settings files
+*.DS_Store
+.claude/settings.local.json
+.worktrees/
