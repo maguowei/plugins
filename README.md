@@ -8,10 +8,22 @@
 
 ## 安装
 
+### Claude Code 插件
+
 ```bash
-/plugin marketplace add https://github.com/maguowei/plugins
+/plugin marketplace add maguowei/plugins
 /plugin install git
 ```
+
+### 作为 Skills 安装
+
+非 Claude Code 工具可通过 skills CLI 将仓库中的 skill 安装到全局：
+
+```bash
+skills add -g git@github.com:maguowei/plugins.git
+```
+
+### 本地开发
 
 本地开发时把 URL 换成仓库本地路径，修改后执行 `/plugin reload git`。插件开发推荐使用官方 [plugin-dev](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/plugin-dev) 插件。
 
