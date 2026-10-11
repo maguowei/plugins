@@ -1,0 +1,11 @@
+{
+  "name": "agent-maintenance",
+  "version": "0.1.0",
+  "description": "维护项目侧 agent 配置的 skill 集合：把 docs/agents 与 CLAUDE.md/AGENTS.md 的 Agent skills 章节与上游模板对齐",
+  "author": {
+    "name": "maguowei",
+    "email": "imaguowei@gmail.com"
+  },
+  "keywords": ["agent", "skills", "maintenance", "sync", "docs"],
+  "license": "MIT"
+}

@@ -5,8 +5,8 @@
     "email": "imaguowei@gmail.com"
   },
   "metadata": {
-    "description": "Claude Code 插件集合 - 提供 git 工作流 skill",
-    "version": "1.0.0",
+    "description": "Claude Code 插件集合 - 提供 git 工作流与 agent 配置维护 skill",
+    "version": "1.1.0",
     "pluginRoot": "./plugins"
   },
   "plugins": [
@@ -28,6 +28,27 @@
         "commit",
         "push",
         "conventional-commits"
+      ]
+    },
+    {
+      "name": "agent-maintenance",
+      "source": "./plugins/agent-maintenance",
+      "description": "维护项目侧 agent 配置的 skill 集合：把 docs/agents 与 CLAUDE.md/AGENTS.md 的 Agent skills 章节与上游模板对齐",
+      "version": "0.1.0",
+      "author": {
+        "name": "maguowei",
+        "email": "imaguowei@gmail.com"
+      },
+      "homepage": "https://github.com/maguowei/plugins/tree/main/plugins/agent-maintenance",
+      "repository": "https://github.com/maguowei/plugins",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "agent",
+        "skills",
+        "maintenance",
+        "sync",
+        "docs"
       ]
     }
   ]
