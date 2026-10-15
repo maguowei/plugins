@@ -1,6 +1,7 @@
 ---
 name: push
 description: 检查分支与远端状态后安全推送当前分支，新分支自动设置 upstream
+disable-model-invocation: true
 allowed-tools: Bash(git status:*), Bash(git branch:*), Bash(git log:*), Bash(git remote:*), Bash(git rev-parse:*), Bash(git fetch:*), Bash(git push:*)
 ---
 
