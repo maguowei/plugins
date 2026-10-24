@@ -4,7 +4,7 @@
 
 | Skill | 作用 |
 | --- | --- |
-| `go-project:init` | 在空目录初始化 HTTP 服务（可选 PostgreSQL）或 CLI 项目：选型、目录布局、质量门禁与 agent 资产，收尾跑通项目自身的 `make verify` |
+| `go-project:init` | 在空目录初始化 HTTP 服务（可选 PostgreSQL）或 CLI 项目：选型、目录布局、质量门禁与 agent 资产，收尾跑通项目自身的 `make verify`；仅在用户显式调用时运行（`disable-model-invocation: true`） |
 | `go-project:audit` | 只读审计现有 Go 项目，按「必须修：AI 友好缺口 / 建议：结构与命名 / 提示：技术栈差异」三档输出带证据的报告 |
 
 ## 安装

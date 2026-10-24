@@ -55,7 +55,7 @@
       "name": "go-project",
       "source": "./plugins/go-project",
       "description": "按 codego 基线初始化 AI Coding 友好的 Go 项目（HTTP 服务或 CLI），并只读审计现有 Go 项目给出分级建议",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "maguowei",
         "email": "imaguowei@gmail.com"

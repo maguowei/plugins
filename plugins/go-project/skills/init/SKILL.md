@@ -1,6 +1,7 @@
 ---
 name: init
 description: 不依赖 codego 脚手架，按 codego 基线初始化一个 AI Coding 友好的新 Go 项目（HTTP 服务或 CLI）：选型、目录布局、质量门禁与 agent 资产。用户要新建、初始化、起一个 Go 服务或 Go 命令行项目时使用。
+disable-model-invocation: true
 ---
 
 # 初始化 Go 项目
