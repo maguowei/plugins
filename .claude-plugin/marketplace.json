@@ -5,8 +5,8 @@
     "email": "imaguowei@gmail.com"
   },
   "metadata": {
-    "description": "Claude Code 插件集合 - 提供 git 工作流与 agent 配置维护 skill",
-    "version": "1.1.0",
+    "description": "Claude Code 插件集合 - 提供 git 工作流、agent 配置维护与 Go 项目初始化/审计 skill",
+    "version": "1.2.0",
     "pluginRoot": "./plugins"
   },
   "plugins": [
@@ -49,6 +49,27 @@
         "maintenance",
         "sync",
         "docs"
+      ]
+    },
+    {
+      "name": "go-project",
+      "source": "./plugins/go-project",
+      "description": "按 codego 基线初始化 AI Coding 友好的 Go 项目（HTTP 服务或 CLI），并只读审计现有 Go 项目给出分级建议",
+      "version": "0.1.0",
+      "author": {
+        "name": "maguowei",
+        "email": "imaguowei@gmail.com"
+      },
+      "homepage": "https://github.com/maguowei/plugins/tree/main/plugins/go-project",
+      "repository": "https://github.com/maguowei/plugins",
+      "license": "MIT",
+      "category": "development",
+      "keywords": [
+        "go",
+        "golang",
+        "scaffold",
+        "audit",
+        "ai-coding"
       ]
     }
   ]

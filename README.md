@@ -7,6 +7,9 @@
   - `git:push`：检查远端、工作区与同步状态后安全推送，新分支自动设置 upstream
 - **agent-maintenance**：维护项目侧 agent 配置的 skill 集合，后续类似工具也放在这里。
   - `agent-maintenance:sync-matt-pocock-skills`：把 `docs/agents/*.md` 与 `CLAUDE.md`/`AGENTS.md` 的 `## Agent skills` 章节同步到 mattpocock/skills 上游最新模板，处理 `CONTEXT.md` → `GLOSSARY.md` 等迁移，并补齐「本节由 agent skills 配置流程维护」声明
+- **go-project**：不运行 codego 脚手架，按 codego 基线初始化和审计 Go 项目。
+  - `go-project:init`：在空目录初始化 HTTP 服务（可选 PostgreSQL）或 CLI 项目，包含选型、目录布局、质量门禁与 agent 资产，收尾跑通 `make verify`
+  - `go-project:audit`：只读审计现有 Go 项目，按 AI 友好缺口 / 结构与命名 / 技术栈差异三档输出带证据的报告
 
 ## 安装
 
@@ -16,6 +19,7 @@
 /plugin marketplace add maguowei/plugins
 /plugin install git
 /plugin install agent-maintenance
+/plugin install go-project
 ```
 
 ### 作为 Skills 安装
