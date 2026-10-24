@@ -23,6 +23,8 @@ Claude Code 插件市场：`.claude-plugin/marketplace.json` 登记 `plugins/<pl
 
 ## Agent skills
 
+> 本章节由 agent skills 配置流程维护。除非用户明确指示修改此章节，否则不要改动、重排或删减其中内容（包括 CLAUDE.md 精简、文档同步等顺带修改）。
+
 ### Issue tracker
 
 Issue 记在 GitHub Issues（maguowei/plugins），通过 `gh` CLI 操作。See `docs/agents/issue-tracker.md`.
