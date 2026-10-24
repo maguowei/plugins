@@ -2,14 +2,13 @@
 
 ## 插件
 
-- **git**：git 工作流 skill 集合，可被其他 agent 和 workflow 调用。
-  - `git:commit`：按 Conventional Commits 规范提交（type 英文、描述中文，scope 可选），支持首次提交
-  - `git:push`：检查远端、工作区与同步状态后安全推送，新分支自动设置 upstream
-- **agent-maintenance**：维护项目侧 agent 配置的 skill 集合，后续类似工具也放在这里。
-  - `agent-maintenance:sync-matt-pocock-skills`：把 `docs/agents/*.md` 与 `CLAUDE.md`/`AGENTS.md` 的 `## Agent skills` 章节同步到 mattpocock/skills 上游最新模板，处理 `CONTEXT.md` → `GLOSSARY.md` 等迁移，并补齐「本节由 agent skills 配置流程维护」声明
-- **go-project**：不运行 codego 脚手架，按 codego 基线初始化和审计 Go 项目。
-  - `go-project:init`：在空目录初始化 HTTP 服务（可选 PostgreSQL）或 CLI 项目，包含选型、目录布局、质量门禁与 agent 资产，收尾跑通 `make verify`
-  - `go-project:audit`：只读审计现有 Go 项目，按 AI 友好缺口 / 结构与命名 / 技术栈差异三档输出带证据的报告
+| 插件 | 作用 | Skill |
+| --- | --- | --- |
+| [git](plugins/git/README.md) | git 工作流，可被其他 agent 和 workflow 调用 | `git:commit`、`git:push` |
+| [agent-maintenance](plugins/agent-maintenance/README.md) | 把项目侧 agent 配置同步到 mattpocock/skills 上游模板 | `agent-maintenance:sync-matt-pocock-skills` |
+| [go-project](plugins/go-project/README.md) | 不运行 codego 脚手架，按 codego 基线初始化和审计 Go 项目 | `go-project:init`、`go-project:audit` |
+
+各 skill 的行为与约束见对应插件 README。
 
 ## 安装
 
@@ -17,9 +16,9 @@
 
 ```bash
 /plugin marketplace add maguowei/plugins
-/plugin install git
-/plugin install agent-maintenance
-/plugin install go-project
+/plugin install git@maguowei-plugins
+/plugin install agent-maintenance@maguowei-plugins
+/plugin install go-project@maguowei-plugins
 ```
 
 ### 作为 Skills 安装
@@ -30,9 +29,16 @@
 skills add -g maguowei/plugins
 ```
 
-### 本地开发
+## 本地开发
 
-本地开发时把 URL 换成仓库本地路径，修改后执行 `/plugin reload git`。插件开发推荐使用官方 [plugin-dev](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/plugin-dev) 插件。
+在仓库根目录直接加载全部插件，无需安装：
+
+```bash
+claude plugin validate .         # 校验 marketplace、插件清单与 skill frontmatter
+claude --plugin-dir ./plugins    # 本次会话加载 plugins/ 下所有插件
+```
+
+会话中修改文件后执行 `/reload-plugins` 生效。
 
 ## 参考
 
